@@ -63,6 +63,11 @@ class Statistics extends Component {
               infrastructure will enable both teams to read and comment on data, track entities
               between resources and support mappings between entities.
             </p>
+            <p>
+              <a href="https://www.ebi.ac.uk/data-protection/privacy-notice/gifts" target="_blank">
+                Privacy Notice for GIFTS Collaborative Annotation Portal
+              </a>
+            </p>
           </div>
           <div className="column medium-10">
             <div className="row">
