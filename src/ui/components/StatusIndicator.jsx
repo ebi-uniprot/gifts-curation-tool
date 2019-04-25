@@ -36,8 +36,4 @@ StatusIndicator.propTypes = {
   ]).isRequired,
 };
 
-StatusIndicator.defaultProps = {
-  status: '',
-};
-
 export default StatusIndicator;
