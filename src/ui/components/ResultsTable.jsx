@@ -88,8 +88,12 @@ class ResultsTable extends Component {
         return null;
       }
 
+      const detailsPageLink = (mapping.mappingId)
+        ? `${BASE_URL}/mapping/${mapping.mappingId}`
+        : `${BASE_URL}/unmapped/${mapping.id}`;
+
       return (
-        <Link to={`${BASE_URL}/mapping/${mapping.mappingId}`} key={key} className="table-row">
+        <Link to={detailsPageLink} key={key} className="table-row">
           <div className="table-cell">
             {(mapping.uniprotEntry.isCanonical)
               && (

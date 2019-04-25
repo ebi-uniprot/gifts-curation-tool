@@ -26,6 +26,7 @@ function getClassName(status) {
 
 const StatusIndicator = (props) => {
   const { status } = props;
+console.log("status:", status);
   return <div className={getClassName(status)} />;
 };
 

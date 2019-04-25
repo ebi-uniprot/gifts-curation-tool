@@ -12,6 +12,7 @@ import queryString from 'query-string';
 import Layout from './Layout';
 import Home from './Home';
 import Mappings from './Mappings';
+import Unmapped from './Unmapped';
 import Login from './Login';
 import Logout from './Logout';
 import Mapping from './Mapping';
@@ -345,6 +346,12 @@ class App extends Component {
                 path={`${BASE_URL}/mapping/:mappingId`}
                 render={({ match }) => (
                   <Mapping match={match} isLoggedIn={authenticated} {...appProps} />
+                )}
+              />
+              <Route
+                path={`${BASE_URL}/unmapped/:id`}
+                render={({ match }) => (
+                  <Unmapped match={match} isLoggedIn={authenticated} {...appProps} />
                 )}
               />
               <Route exact path={`${BASE_URL}/error`} render={() => <Broken {...appProps} />} />

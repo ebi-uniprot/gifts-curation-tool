@@ -23,10 +23,14 @@ class StatusChangeControl extends Component {
 
   updateStatus = () => {
     const {
-      mappingId, status, history, cookies,
+      id,
+      status,
+      history,
+      cookies,
+      apiUri,
+      options,
     } = this.props;
 
-    const apiURI = `${API_URL}/mapping/${mappingId}/status/`;
     const changes = {
       status,
     };
@@ -36,7 +40,7 @@ class StatusChangeControl extends Component {
     };
 
     axios
-      .put(apiURI, changes, config)
+      .put(apiUri, changes, config)
       .then(() => {
         this.setState({ editMode: false });
       })
@@ -66,6 +70,14 @@ class StatusChangeControl extends Component {
     });
   };
 
+  statusToTextValue(status) {
+    const { options } = this.props;
+    const item = Object.values(options)[status - 1]
+    return (item)
+      ? item.description
+      : status;
+  }
+
   render() {
     const { editMode } = this.state;
     const { options, onChange, status } = this.props;
@@ -78,7 +90,11 @@ class StatusChangeControl extends Component {
 
     const StatusChangeForm = () => (
       <div className="status-change-form">
-        <select className="status-modifier input-group-field" onChange={onChange} value={status}>
+        <select
+          className="status-modifier input-group-field"
+          onChange={onChange}
+          value={this.statusToTextValue(status)}
+        >
           {statusList}
         </select>
         <div className="button-group">
@@ -102,7 +118,7 @@ class StatusChangeControl extends Component {
 
     const Status = () => (
       <Fragment>
-        <span>{status}</span>
+        <span>{this.statusToTextValue(status)}</span>
         &nbsp;
         <button
           type="button"
@@ -121,7 +137,8 @@ class StatusChangeControl extends Component {
 
 StatusChangeControl.propTypes = {
   status: PropTypes.string.isRequired,
-  mappingId: PropTypes.number.isRequired,
+  apiUri: PropTypes.string.isRequired,
+  id: PropTypes.number.isRequired,
   history: PropTypes.shape({}).isRequired,
   cookies: PropTypes.shape({}).isRequired,
   options: PropTypes.arrayOf(PropTypes.shape({})).isRequired,

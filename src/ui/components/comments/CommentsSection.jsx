@@ -6,7 +6,6 @@ import { withCookies } from 'react-cookie';
 import SimpleMED from 'simplemde';
 
 import Comment from './Comment';
-import StatusSection from '../StatusSection';
 
 import '../../../styles/CommentsSection.scss';
 
@@ -24,7 +23,7 @@ class CommentsSection extends Component {
   }
 
   componentDidUpdate() {
-    const { isLoggedIn, mappingId } = this.props;
+    const { isLoggedIn, id, mapped } = this.props;
 
     if (this.textEditor === null && isLoggedIn) {
       this.createTextEditor();
@@ -34,12 +33,22 @@ class CommentsSection extends Component {
     if (this.textEditor) {
       this.textEditor.render(document.getElementById('text-editor'));
 
-      this.textEditor.value(localStorage.getItem(`comments-${mappingId}`) || '');
+      this.textEditor.value(
+        localStorage.getItem(
+          this.createId(id)
+        )
+      || '');
     }
   }
 
+  createId(id) {
+    const { mapped } = this.props;
+
+    return `comments-${(mapped)?'mapped':'unmapped'}-${id}`;
+  }
+
   createTextEditor = () => {
-    const { mappingId } = this.props;
+    const { id } = this.props;
     const element = document.getElementById('text-editor');
 
     if (element === null) {
@@ -48,7 +57,7 @@ class CommentsSection extends Component {
 
     this.textEditor = new SimpleMED({
       element,
-      initialValue: localStorage.getItem(`comments-${mappingId}`) || '',
+      initialValue: localStorage.getItem(this.createId(id)) || '',
       hideIcons: ['image'],
     });
 
@@ -56,22 +65,22 @@ class CommentsSection extends Component {
   };
 
   onCommentTextchange = () => {
-    const { mappingId } = this.props;
+    const { id } = this.props;
     const text = this.textEditor.value();
 
-    localStorage.setItem(`comments-${mappingId}`, text);
+    localStorage.setItem(this.createId(id), text);
   }
 
   saveComment = () => {
     const {
-      mappingId,
+      id,
       isLoggedIn,
       history,
       cookies,
       afterSaveCallback,
+      apiUri,
     } = this.props;
 
-    const apiURI = `${API_URL}/mapping/${mappingId}/comments/`;
     const comment = {
       text: this.textEditor.value(),
     };
@@ -84,12 +93,12 @@ class CommentsSection extends Component {
     };
 
     axios
-      .post(apiURI, comment, config)
+      .post(apiUri, comment, config)
       .then(() => {
         this.textEditor.value('');
-        afterSaveCallback(mappingId, isLoggedIn);
+        afterSaveCallback(id, isLoggedIn);
 
-        localStorage.removeItem(`comments-${mappingId}`);
+        localStorage.removeItem(this.createId(id));
       })
       .catch((e) => {
         console.log(e);
@@ -99,11 +108,12 @@ class CommentsSection extends Component {
 
   render() {
     const {
-      mappingId,
+      id,
       isLoggedIn,
       comments,
       mappingStatus,
       onMappingStatusChange,
+      statusChangeControl,
     } = this.props;
 
     if (isLoggedIn === false) {
@@ -124,13 +134,7 @@ class CommentsSection extends Component {
             <div className="comment__avatar">?</div>
             <div className="comment__details">
               <div className="status-wrapper">
-                <StatusSection
-                  mappingId={mappingId}
-                  isLoggedIn={isLoggedIn}
-                  status={mappingStatus}
-                  onChange={onMappingStatusChange}
-                  editable={true}
-                />
+                {statusChangeControl}
               </div>
               <textarea id="text-editor" />
               <button
@@ -150,13 +154,14 @@ class CommentsSection extends Component {
 
 CommentsSection.propTypes = {
   mappingStatus: PropTypes.string.isRequired,
-  onMappingStatusChange: PropTypes.func.isRequired,
   isLoggedIn: PropTypes.bool.isRequired,
-  mappingId: PropTypes.number.isRequired,
+  id: PropTypes.number.isRequired,
   history: PropTypes.shape({}).isRequired,
   cookies: PropTypes.shape({}).isRequired,
   afterSaveCallback: PropTypes.func.isRequired,
   comments: PropTypes.arrayOf(PropTypes.shape({})),
+  mapped: PropTypes.bool.isRequired,
+  statusChangeControl: PropTypes.node.isRequired,
 };
 
 CommentsSection.defaultProps = {

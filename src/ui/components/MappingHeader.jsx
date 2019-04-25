@@ -102,7 +102,7 @@ const MappingHeader = (props) => {
           {mapping.uniprotEntry.isCanonical ? 'Yes' : 'No'}
         </div>
         <div>
-          <strong>Length</strong>
+          <strong>Length:</strong>
           &nbsp;
           {mapping.uniprotEntry.length}
         </div>

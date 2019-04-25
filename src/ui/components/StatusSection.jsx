@@ -16,28 +16,38 @@ class StatusSection extends Component {
     axios.get(apiURI).then(d => this.setState({ statusOptions: d.data }));
   }
 
+  statusToTextValue(status) {
+    const { statusOptions } = this.state;
+    const item = Object.values(statusOptions)[status - 1]
+    return (item)
+      ? item.description
+      : status;
+  }
+
   render() {
     const {
       status,
       onChange,
       isLoggedIn,
-      mappingId,
+      id,
+      apiUri,
       editable,
     } = this.props;
     const { statusOptions } = this.state;
 
     return (
       <div className="status-section">
-        <StatusIndicator status={status} />
+        <StatusIndicator status={this.statusToTextValue(status)} />
         {(isLoggedIn && editable) ? (
           <StatusChangeControl
-            mappingId={mappingId}
+            id={id}
             status={status}
             options={statusOptions}
             onChange={onChange}
+            apiUri={apiUri}
           />
         ) : (
-          <span>{status}</span>
+          <span>{this.statusToTextValue(status)}</span>
         )}
       </div>
     );
@@ -48,7 +58,8 @@ StatusSection.propTypes = {
   status: PropTypes.string.isRequired,
   onChange: PropTypes.func.isRequired,
   isLoggedIn: PropTypes.bool.isRequired,
-  mappingId: PropTypes.number.isRequired,
+  id: PropTypes.number.isRequired,
+  apiUri: PropTypes.string.isRequired,
   editable: PropTypes.bool,
 };
 

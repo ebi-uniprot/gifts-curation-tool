@@ -6,17 +6,15 @@ import { withCookies } from 'react-cookie';
 import decode from 'jwt-decode';
 
 import LoadingSpinner from './components/LoadingSpinner';
-import Alignment from './components/alignment/Alignment';
-import LabelsSection from './components/label/LabelsSection';
+import UnmappedHeader from './components/UnmappedHeader';
 import RelatedMappingsSection from './components/RelatedMappingsSection';
-import MappingHeader from './components/MappingHeader';
-import MappingStatusSection from './components/MappingStatusControl';
-import MappingComments from './components/comments/MappingComments';
+import UnmappedStatusControl from './components/UnmappedStatusControl';
+import UnmappedComments from './components/comments/UnmappedComments';
 
-import '../styles/Mapping.scss';
+import '../styles/Unmapped.scss';
 import '../../node_modules/simplemde/dist/simplemde.min.css';
 
-class Mapping extends Component {
+class Unmapped extends Component {
   constructor(props) {
     super(props);
 
@@ -24,14 +22,14 @@ class Mapping extends Component {
       match: { params },
       isLoggedIn,
     } = props;
-    const { mappingId } = params;
+    const { id } = params;
 
     this.state = {
       ...this.defaultState,
-      mappingId,
+      id,
     };
 
-    this.getMappingDetails(mappingId, isLoggedIn);
+    this.getUnmappedDetails(id, isLoggedIn);
   }
 
   defaultState = {
@@ -39,9 +37,8 @@ class Mapping extends Component {
     status: null,
     comments: null,
     isLoggedIn: null,
-    mappingId: null,
+    id: null,
     labels: null,
-    showAlignment: true,
   };
 
   componentDidUpdate(prevProps) {
@@ -50,10 +47,10 @@ class Mapping extends Component {
       isLoggedIn,
       location,
     } = this.props;
-    const { mappingId } = params;
+    const { id } = params;
 
-    if (mappingId !== prevProps.match.params.mappingId) {
-      this.getMappingDetails(mappingId, isLoggedIn);
+    if (id !== prevProps.match.params.id) {
+      this.getMappingDetails(id, isLoggedIn);
     }
     if (location !== prevProps.location) {
       window.scrollTo(0, 0);
@@ -66,14 +63,14 @@ class Mapping extends Component {
     });
   };
 
-  getMappingDetails = (mappingId, isLoggedIn) => {
+  getUnmappedDetails = (id, isLoggedIn) => {
     const { history, cookies } = this.props;
 
     const tokenIsNotExpired = this.forceLoginIfTokenIsExpired();
     const config = {};
     const apiCalls = [
-      axios.get(`${API_URL}/mapping/${mappingId}/?format=json`, config),
-      axios.get(`${API_URL}/mapping/${mappingId}/labels/?format=json`, config),
+      axios.get(`${API_URL}/unmapped/${id}/?format=json`, config),
+      axios.get(`${API_URL}/unmapped/${id}/labels/?format=json`, config),
     ];
 
     if (isLoggedIn && tokenIsNotExpired) {
@@ -81,20 +78,20 @@ class Mapping extends Component {
         Authorization: `Bearer ${cookies.get('jwt')}`,
       };
 
-      apiCalls.push(axios.get(`${API_URL}/mapping/${mappingId}/comments/?format=json`, config));
+      apiCalls.push(axios.get(`${API_URL}/unmapped/${id}/comments/?format=json`, config));
     }
 
     axios
       .all(apiCalls)
-      .then(axios.spread((mappingResponse, labelsResponse, commentsResponse) => {
-        const details = mappingResponse.data;
+      .then(axios.spread((unmappedResponse, labelsResponse, commentsResponse) => {
+        const details = unmappedResponse.data;
         const comments = (commentsResponse && commentsResponse.data.comments) || [];
         const { labels } = labelsResponse.data;
-        const { status } = details.mapping;
+        const { status } = details.entry;
 
         this.setState({
           details,
-          status,
+          status: status || 'NOT_REVIEWED',
           labels,
           comments: comments.reverse(),
           isLoggedIn: isLoggedIn && tokenIsNotExpired,
@@ -103,7 +100,7 @@ class Mapping extends Component {
       .catch(() => {
         history.push(`${BASE_URL}/error`);
       });
-  };
+  }
 
   forceLoginIfTokenIsExpired = () => {
     const { cookies, tokenIsExpired } = this.props;
@@ -127,14 +124,6 @@ class Mapping extends Component {
     return true;
   };
 
-  toggleDisplayAlignment() {
-    const { showAlignment } = this.state;
-
-    this.setState({
-      showAlignment: !showAlignment,
-    });
-  }
-
   render() {
     // eslint-disable-next-line react/destructuring-assignment
     if (this.state.details === null) {
@@ -147,64 +136,34 @@ class Mapping extends Component {
       comments,
       isLoggedIn,
       labels,
-      showAlignment,
     } = this.state;
 
-    const { mapping, relatedEntries, taxonomy } = details;
-    const { mappingId } = mapping;
+    const { match } = this.props;
+    const { params } = match;
+    const { entry, relatedEntries } = details;
+    const { id } = entry;
 
     return (
       <Fragment>
         <div className="row column medium-12">
           <div className="status-wrapper">
-            <MappingStatusSection
-              id={mappingId}
+            <UnmappedStatusControl
+              id={id}
               isLoggedIn={isLoggedIn}
               status={status}
               onChange={this.onStatusChange}
             />
           </div>
-          <MappingHeader mapping={mapping} taxonomy={taxonomy} />
+          <UnmappedHeader unmapped={details} />
         </div>
-        <div className="row column medium-12">
-          <LabelsSection
-            mappingId={mappingId}
-            isLoggedIn={isLoggedIn}
-            labels={labels}
-            afterChangeCallback={this.getMappingDetails}
-          />
-        </div>
-
-        <div className="row column medium-12">
-          <button
-            type="button"
-            className="button"
-            onClick={() => this.toggleDisplayAlignment()}
-          >
-            {(showAlignment) ? 'Hide ' : 'Show '}
-            Alignment
-          </button>
-          {(showAlignment)
-            // This 'mappingId' is set at a different time
-            // from 'mapping.mappingId'
-            // eslint-disable-next-line react/destructuring-assignment
-            ? <Alignment mappingId={this.state.mappingId} />
-            : null }
-        </div>
-
-        <div className="row column medium-12">
-          <h3>Related Mappings</h3>
-          <RelatedMappingsSection mappings={relatedEntries} />
-        </div>
-
         <div className="row mapping__comments__wrapper">
           <div className="column medium-12">
-            <MappingComments
-              id={mappingId}
+            <UnmappedComments
+              id={id}
               isLoggedIn={isLoggedIn}
               comments={comments}
               mappingStatus={status}
-              afterSaveCallback={this.getMappingDetails}
+              afterSaveCallback={this.getUnmappedDetails}
               onMappingStatusChange={this.onStatusChange}
             />
           </div>
@@ -214,11 +173,11 @@ class Mapping extends Component {
   }
 }
 
-Mapping.propTypes = {
+Unmapped.propTypes = {
   history: PropTypes.shape({}).isRequired,
   match: PropTypes.shape({
     params: PropTypes.shape({
-      mappingId: PropTypes.string,
+      id: PropTypes.string,
     }),
   }).isRequired,
   tokenIsExpired: PropTypes.func.isRequired,
@@ -227,4 +186,4 @@ Mapping.propTypes = {
   location: PropTypes.shape({}).isRequired,
 };
 
-export default withCookies(withRouter(Mapping));
+export default withCookies(withRouter(Unmapped));
