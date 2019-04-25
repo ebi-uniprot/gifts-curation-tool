@@ -23,12 +23,10 @@ class StatusChangeControl extends Component {
 
   updateStatus = () => {
     const {
-      id,
       status,
       history,
       cookies,
       apiUri,
-      options,
     } = this.props;
 
     const changes = {
@@ -72,7 +70,9 @@ class StatusChangeControl extends Component {
 
   statusToTextValue(status) {
     const { options } = this.props;
-    const item = Object.values(options)[status - 1]
+    const item = Object.values(options)
+      .find(el => el.id === status);
+
     return (item)
       ? item.description
       : status;
@@ -136,9 +136,11 @@ class StatusChangeControl extends Component {
 }
 
 StatusChangeControl.propTypes = {
-  status: PropTypes.string.isRequired,
+  status: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.number,
+  ]).isRequired,
   apiUri: PropTypes.string.isRequired,
-  id: PropTypes.number.isRequired,
   history: PropTypes.shape({}).isRequired,
   cookies: PropTypes.shape({}).isRequired,
   options: PropTypes.arrayOf(PropTypes.shape({})).isRequired,

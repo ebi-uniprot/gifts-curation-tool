@@ -26,12 +26,14 @@ function getClassName(status) {
 
 const StatusIndicator = (props) => {
   const { status } = props;
-console.log("status:", status);
   return <div className={getClassName(status)} />;
 };
 
 StatusIndicator.propTypes = {
-  status: PropTypes.string,
+  status: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.number,
+  ]).isRequired,
 };
 
 StatusIndicator.defaultProps = {

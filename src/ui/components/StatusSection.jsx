@@ -18,7 +18,9 @@ class StatusSection extends Component {
 
   statusToTextValue(status) {
     const { statusOptions } = this.state;
-    const item = Object.values(statusOptions)[status - 1]
+    const item = Object.values(statusOptions)
+      .find(el => el.id === status);
+
     return (item)
       ? item.description
       : status;
@@ -55,7 +57,10 @@ class StatusSection extends Component {
 }
 
 StatusSection.propTypes = {
-  status: PropTypes.string.isRequired,
+  status: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.number,
+  ]).isRequired,
   onChange: PropTypes.func.isRequired,
   isLoggedIn: PropTypes.bool.isRequired,
   id: PropTypes.number.isRequired,

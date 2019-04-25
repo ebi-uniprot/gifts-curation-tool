@@ -1,21 +1,23 @@
-import React, { Component } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 
 import StatusSection from './StatusSection';
 
-class MappingStatusControl extends Component {
-  render() {
-    const {
-      id,
-    } = this.props;
+const MappingStatusControl = (props) => {
+  const { id } = props;
+  const apiUri = `${API_URL}/mapping/${id}/status/`;
 
-    const apiUri = `${API_URL}/mapping/${id}/status/`;
-
-    return <StatusSection
+  return (
+    <StatusSection
       id={id}
       apiUri={apiUri}
-      {...this.props}
-    />;
-  };
-}
+      {...props}
+    />
+  );
+};
+
+MappingStatusControl.propTypes = {
+  id: PropTypes.number.isRequired,
+};
 
 export default MappingStatusControl;

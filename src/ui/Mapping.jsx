@@ -17,6 +17,16 @@ import '../styles/Mapping.scss';
 import '../../node_modules/simplemde/dist/simplemde.min.css';
 
 class Mapping extends Component {
+  defaultState = {
+    details: null,
+    status: null,
+    comments: null,
+    isLoggedIn: null,
+    mappingId: null,
+    labels: null,
+    showAlignment: true,
+  };
+
   constructor(props) {
     super(props);
 
@@ -33,16 +43,6 @@ class Mapping extends Component {
 
     this.getMappingDetails(mappingId, isLoggedIn);
   }
-
-  defaultState = {
-    details: null,
-    status: null,
-    comments: null,
-    isLoggedIn: null,
-    mappingId: null,
-    labels: null,
-    showAlignment: true,
-  };
 
   componentDidUpdate(prevProps) {
     const {

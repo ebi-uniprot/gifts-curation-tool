@@ -8,7 +8,7 @@ import '../../styles/UnmappedHeader.scss';
 
 const UnmappedHeader = (props) => {
   const { unmapped } = props;
-  const { entry, relatedEntries } = unmapped;
+  const { entry } = unmapped;
 
   const proteinExistenceValues = {
     1: 'Evidence at protein level',

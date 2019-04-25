@@ -23,7 +23,7 @@ class CommentsSection extends Component {
   }
 
   componentDidUpdate() {
-    const { isLoggedIn, id, mapped } = this.props;
+    const { isLoggedIn, id } = this.props;
 
     if (this.textEditor === null && isLoggedIn) {
       this.createTextEditor();
@@ -35,16 +35,11 @@ class CommentsSection extends Component {
 
       this.textEditor.value(
         localStorage.getItem(
-          this.createId(id)
+          this.createId(id),
         )
-      || '');
+      || '',
+      );
     }
-  }
-
-  createId(id) {
-    const { mapped } = this.props;
-
-    return `comments-${(mapped)?'mapped':'unmapped'}-${id}`;
   }
 
   createTextEditor = () => {
@@ -106,13 +101,16 @@ class CommentsSection extends Component {
       });
   };
 
+  createId(id) {
+    const { mapped } = this.props;
+
+    return `comments-${(mapped) ? 'mapped' : 'unmapped'}-${id}`;
+  }
+
   render() {
     const {
-      id,
       isLoggedIn,
       comments,
-      mappingStatus,
-      onMappingStatusChange,
       statusChangeControl,
     } = this.props;
 
@@ -153,7 +151,6 @@ class CommentsSection extends Component {
 }
 
 CommentsSection.propTypes = {
-  mappingStatus: PropTypes.string.isRequired,
   isLoggedIn: PropTypes.bool.isRequired,
   id: PropTypes.number.isRequired,
   history: PropTypes.shape({}).isRequired,
@@ -162,6 +159,7 @@ CommentsSection.propTypes = {
   comments: PropTypes.arrayOf(PropTypes.shape({})),
   mapped: PropTypes.bool.isRequired,
   statusChangeControl: PropTypes.node.isRequired,
+  apiUri: PropTypes.string.isRequired,
 };
 
 CommentsSection.defaultProps = {

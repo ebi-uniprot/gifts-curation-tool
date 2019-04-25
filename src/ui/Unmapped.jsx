@@ -7,7 +7,6 @@ import decode from 'jwt-decode';
 
 import LoadingSpinner from './components/LoadingSpinner';
 import UnmappedHeader from './components/UnmappedHeader';
-import RelatedMappingsSection from './components/RelatedMappingsSection';
 import UnmappedStatusControl from './components/UnmappedStatusControl';
 import UnmappedComments from './components/comments/UnmappedComments';
 
@@ -15,6 +14,15 @@ import '../styles/Unmapped.scss';
 import '../../node_modules/simplemde/dist/simplemde.min.css';
 
 class Unmapped extends Component {
+  defaultState = {
+    details: null,
+    status: null,
+    comments: null,
+    isLoggedIn: null,
+    id: null,
+    labels: null,
+  };
+
   constructor(props) {
     super(props);
 
@@ -26,20 +34,10 @@ class Unmapped extends Component {
 
     this.state = {
       ...this.defaultState,
-      id,
     };
 
     this.getUnmappedDetails(id, isLoggedIn);
   }
-
-  defaultState = {
-    details: null,
-    status: null,
-    comments: null,
-    isLoggedIn: null,
-    id: null,
-    labels: null,
-  };
 
   componentDidUpdate(prevProps) {
     const {
@@ -86,13 +84,11 @@ class Unmapped extends Component {
       .then(axios.spread((unmappedResponse, labelsResponse, commentsResponse) => {
         const details = unmappedResponse.data;
         const comments = (commentsResponse && commentsResponse.data.comments) || [];
-        const { labels } = labelsResponse.data;
         const { status } = details.entry;
 
         this.setState({
           details,
           status: status || 'NOT_REVIEWED',
-          labels,
           comments: comments.reverse(),
           isLoggedIn: isLoggedIn && tokenIsNotExpired,
         });
@@ -135,12 +131,9 @@ class Unmapped extends Component {
       status,
       comments,
       isLoggedIn,
-      labels,
     } = this.state;
 
-    const { match } = this.props;
-    const { params } = match;
-    const { entry, relatedEntries } = details;
+    const { entry } = details;
     const { id } = entry;
 
     return (

@@ -1,22 +1,23 @@
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 
 import StatusSection from './StatusSection';
 
-class UnmappedStatusControl extends Component {
-  render() {
-    const {
-      id,
-    } = this.props;
+const UnmappedStatusControl = (props) => {
+  const { id } = props;
+  const apiUri = `${API_URL}/unmapped/${id}/status/`;
 
-    const apiUri = `${API_URL}/unmapped/${id}/status/`;
-
-    return <StatusSection
+  return (
+    <StatusSection
       id={id}
       apiUri={apiUri}
-      {...this.props}
-    />;
-  };
-}
+      {...props}
+    />
+  );
+};
+
+UnmappedStatusControl.propTypes = {
+  id: PropTypes.number.isRequired,
+};
 
 export default UnmappedStatusControl;
