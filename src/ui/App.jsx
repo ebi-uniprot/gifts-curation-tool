@@ -8,6 +8,7 @@ import {
 import PropTypes from 'prop-types';
 import { withCookies } from 'react-cookie';
 import queryString from 'query-string';
+import * as jwt from 'jsonwebtoken';
 
 import Layout from './Layout';
 import Home from './Home';
@@ -54,13 +55,9 @@ class App extends Component {
     const { cookies } = this.props;
     this.setState({
       authenticated: cookies.get('authenticated') === '1',
-      jwt: cookies.get('jwt') || '',
+      jwt: cookies.get('userToken') || '',
     });
   }
-
-  onLoginFailure = () => {
-    this.setState(this.defaultState);
-  };
 
   onLogout = () => {
     const { history } = this.props;
@@ -122,7 +119,12 @@ class App extends Component {
     );
   };
 
-  clearMessage = () => this.setState({ message: null });
+  onLoginFailure = () => {
+    const { cookies } = this.props;
+
+    this.setState(this.defaultState);
+    cookies.set('userToken', '', { path: '/' });
+  };
 
   tokenIsExpired = () => {
     this.setState({
@@ -136,6 +138,35 @@ class App extends Component {
     });
   };
 
+  forceLoginIfTokenIsExpired = () => {
+    const { cookies } = this.props;
+    const rawToken = cookies.get('userToken') || undefined;
+
+    try {
+      if (typeof rawToken === 'undefined' || rawToken === 'EXPIRED') {
+        return false;
+      }
+
+      const decoded = jwt.verify(message.data, AAP_PUBLIC_KEY, { algorithm: 'RS256'});
+
+      const utcNow = parseInt(new Date().getTime() / 1000, 10);
+
+      if (typeof decoded.exp !== 'undefined' && decoded.exp - utcNow <= 0) {
+        cookies.remove('authenticated', { path: '/' });
+        cookies.set('userToken', 'EXPIRED', { path: '/' });
+
+        this.tokenIsExpired();
+        return false;
+      }
+    } catch(e) {
+      return false;
+    }
+
+    return true;
+  };
+
+  clearMessage = () => this.setState({ message: null });
+
   clearExpiredLoginMessage = () => {
     const { cookies } = this.props;
 
@@ -143,7 +174,7 @@ class App extends Component {
       validToken: true,
     });
 
-    cookies.remove('jwt', { path: '/' });
+    cookies.remove('userToken', { path: '/' });
   };
 
   exploreMappingsByOrganism = (organism) => {
@@ -316,6 +347,7 @@ class App extends Component {
       resetSearchAndFacets: this.resetSearchAndFacets,
       goToMappingsPage: this.goToMappingsPage,
       toggleFilter: this.toggleFilter,
+      forceLoginIfTokenIsExpired: this.forceLoginIfTokenIsExpired,
     };
 
     const tokenIsExpiredMessage = {

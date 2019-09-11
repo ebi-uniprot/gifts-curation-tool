@@ -3,7 +3,6 @@ import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import axios from 'axios';
 import { withCookies } from 'react-cookie';
-import decode from 'jwt-decode';
 
 import LoadingSpinner from './components/LoadingSpinner';
 import Alignment from './components/alignment/Alignment';
@@ -67,9 +66,9 @@ class Mapping extends Component {
   };
 
   getMappingDetails = (mappingId, isLoggedIn) => {
-    const { history, cookies } = this.props;
+    const { history, cookies, forceLoginIfTokenIsExpired } = this.props;
 
-    const tokenIsNotExpired = this.forceLoginIfTokenIsExpired();
+    const tokenIsNotExpired = forceLoginIfTokenIsExpired();
     const config = {};
     const apiCalls = [
       axios.get(`${API_URL}/mapping/${mappingId}/?format=json`, config),
@@ -103,28 +102,6 @@ class Mapping extends Component {
       .catch(() => {
         history.push(`${BASE_URL}/error`);
       });
-  };
-
-  forceLoginIfTokenIsExpired = () => {
-    const { cookies, tokenIsExpired } = this.props;
-    const jwt = cookies.get('jwt') || undefined;
-    let decoded = {};
-
-    if (typeof jwt !== 'undefined' && jwt !== 'EXPIRED') {
-      decoded = decode(jwt);
-    }
-
-    const utcNow = parseInt(new Date().getTime() / 1000, 10);
-
-    if (typeof decoded.exp !== 'undefined' && decoded.exp - utcNow <= 0) {
-      cookies.remove('authenticated', { path: '/' });
-      cookies.set('jwt', 'EXPIRED', { path: '/' });
-
-      tokenIsExpired();
-      return false;
-    }
-
-    return true;
   };
 
   toggleDisplayAlignment() {
