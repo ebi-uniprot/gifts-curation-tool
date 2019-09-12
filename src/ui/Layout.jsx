@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import Header from './components/Header';
 
 const Layout = (props) => {
-  const { children } = props;
+  const { children, frontendVersion, backendVersion } = props;
 
   return (
     <div id="content">
@@ -15,6 +15,9 @@ const Layout = (props) => {
           {children}
         </div>
       </section>
+      <div className="footer-versions">
+         <span>Front-end v{`${frontendVersion}`} || Back-end v{`${backendVersion}`}</span>
+      </div>
     </div>
   );
 };

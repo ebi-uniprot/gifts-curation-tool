@@ -8,6 +8,7 @@ import {
 import PropTypes from 'prop-types';
 import { withCookies } from 'react-cookie';
 import queryString from 'query-string';
+import axios from 'axios';
 
 import Layout from './Layout';
 import Home from './Home';
@@ -43,6 +44,8 @@ class App extends Component {
     activeFacets: {},
     initialPage: 0,
     selectedFilters: {},
+    frontendVersion: `${FRONTEND_VERSION}`,
+    backendVersion: null,
   };
 
   constructor(props) {
@@ -52,6 +55,15 @@ class App extends Component {
 
   componentWillMount() {
     const { cookies } = this.props;
+
+    axios
+      .get(`${API_URL}/version/?format=json`)
+      .then(({ data }) => {
+        this.setState({
+          backendVersion: data.version,
+        });
+      });
+
     this.setState({
       authenticated: cookies.get('authenticated') === '1',
       jwt: cookies.get('jwt') || '',
@@ -301,7 +313,7 @@ class App extends Component {
     const LoginComponent = () => (
       <Login onLoginSuccess={this.onLoginSuccess} onLoginFailure={this.onLoginFailure} />
     );
-
+console.log("render state:", this.state);
     const LogoutComponent = () => <Logout onLogout={this.onLogout} />;
     const appProps = {
       ...this.state,
