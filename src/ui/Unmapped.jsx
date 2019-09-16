@@ -17,7 +17,6 @@ class Unmapped extends Component {
     details: null,
     status: null,
     comments: null,
-    isLoggedIn: null,
     id: null,
     labels: null,
   };
@@ -61,9 +60,9 @@ class Unmapped extends Component {
   };
 
   getUnmappedDetails = (id, isLoggedIn) => {
-    const { history, cookies, forceLoginIfTokenIsExpired } = this.props;
+    const { history, cookies, hasValidAuthenticationToken } = this.props;
 
-    const tokenIsNotExpired = forceLoginIfTokenIsExpired();
+    const tokenIsNotExpired = hasValidAuthenticationToken();
     const config = {};
     const apiCalls = [
       axios.get(`${API_URL}/unmapped/${id}/?format=json`, config),
@@ -72,7 +71,7 @@ class Unmapped extends Component {
 
     if (isLoggedIn && tokenIsNotExpired) {
       config.headers = {
-        Authorization: `Bearer ${cookies.get('jwt')}`,
+        Authorization: `Bearer ${cookies.get('userToken')}`,
       };
 
       apiCalls.push(axios.get(`${API_URL}/unmapped/${id}/comments/?format=json`, config));
@@ -89,7 +88,6 @@ class Unmapped extends Component {
           details,
           status: status || 'NOT_REVIEWED',
           comments: comments.reverse(),
-          isLoggedIn: isLoggedIn && tokenIsNotExpired,
         });
       }))
       .catch(() => {
@@ -107,8 +105,11 @@ class Unmapped extends Component {
       details,
       status,
       comments,
-      isLoggedIn,
     } = this.state;
+
+    const {
+      isLoggedIn,
+    } = this.props;
 
     const { entry } = details;
     const { id } = entry;
@@ -150,10 +151,10 @@ Unmapped.propTypes = {
       id: PropTypes.string,
     }),
   }).isRequired,
-  tokenIsExpired: PropTypes.func.isRequired,
   cookies: PropTypes.shape({}).isRequired,
   isLoggedIn: PropTypes.bool.isRequired,
   location: PropTypes.shape({}).isRequired,
+  hasValidAuthenticationToken: PropTypes.func.isRequired,
 };
 
 export default withCookies(withRouter(Unmapped));

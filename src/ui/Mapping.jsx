@@ -20,7 +20,6 @@ class Mapping extends Component {
     details: null,
     status: null,
     comments: null,
-    isLoggedIn: null,
     mappingId: null,
     labels: null,
     showAlignment: true,
@@ -66,9 +65,9 @@ class Mapping extends Component {
   };
 
   getMappingDetails = (mappingId, isLoggedIn) => {
-    const { history, cookies, forceLoginIfTokenIsExpired } = this.props;
+    const { history, cookies, hasValidAuthenticationToken } = this.props;
 
-    const tokenIsNotExpired = forceLoginIfTokenIsExpired();
+    const tokenIsNotExpired = hasValidAuthenticationToken();
     const config = {};
     const apiCalls = [
       axios.get(`${API_URL}/mapping/${mappingId}/?format=json`, config),
@@ -122,10 +121,13 @@ class Mapping extends Component {
       details,
       status,
       comments,
-      isLoggedIn,
       labels,
       showAlignment,
     } = this.state;
+
+    const {
+      isLoggedIn,
+    } = this.props;
 
     const { mapping, relatedEntries, taxonomy } = details;
     const { mappingId } = mapping;
@@ -198,10 +200,10 @@ Mapping.propTypes = {
       mappingId: PropTypes.string,
     }),
   }).isRequired,
-  tokenIsExpired: PropTypes.func.isRequired,
   cookies: PropTypes.shape({}).isRequired,
   isLoggedIn: PropTypes.bool.isRequired,
   location: PropTypes.shape({}).isRequired,
+  hasValidAuthenticationToken: PropTypes.func.isRequired,
 };
 
 export default withCookies(withRouter(Mapping));
