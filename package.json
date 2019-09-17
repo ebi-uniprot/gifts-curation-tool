@@ -11,7 +11,7 @@
     "staging-build": "webpack --config webpack.staging.js --mode production",
     "fallback-build": "webpack --config webpack.prod.js --READ_ONLY --mode production",
     "jslint": "./node_modules/.bin/eslint -c .eslintrc.json --ext .js --ext .jsx src",
-    "csslint": "scss-lint ./src/styles/**/*.scss",
+    "csslint": "scss-lint ./src/styles/*.scss",
     "test": "jest",
     "update-snapshots": "jest --updateSnapshot",
     "remove-obsolete-snapshots": "yarn test -u",
