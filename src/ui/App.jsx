@@ -9,6 +9,7 @@ import PropTypes from 'prop-types';
 import { withCookies } from 'react-cookie';
 import queryString from 'query-string';
 import * as jwt from 'jsonwebtoken';
+import axios from 'axios';
 
 import Layout from './Layout';
 import Home from './Home';
@@ -44,6 +45,8 @@ class App extends Component {
     activeFacets: {},
     initialPage: 0,
     selectedFilters: {},
+    frontendVersion: `${FRONTEND_VERSION}`,
+    backendVersion: null,
   };
 
   constructor(props) {
@@ -52,7 +55,21 @@ class App extends Component {
   }
 
   componentWillMount() {
+    const { cookies } = this.props;
     this.getAuthCookiesAndSetAuthState();
+
+    axios
+      .get(`${API_URL}/version/?format=json`)
+      .then(({ data }) => {
+        this.setState({
+          backendVersion: data.version,
+        });
+      });
+
+    this.setState({
+      authenticated: cookies.get('authenticated') === '1',
+      jwt: cookies.get('jwt') || '',
+    });
   }
 
   getAuthCookiesAndSetAuthState(successCallback = () => null, failurCallback = () => null) {

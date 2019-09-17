@@ -35,5 +35,10 @@ module.exports = {
         loader: "sass-loader" // compiles Sass to CSS
       }]
     }]
-  }
+  },
+  plugins: [
+    new webpack.DefinePlugin({
+      FRONTEND_VERSION: JSON.stringify(require("./package.json").version)
+    })
+  ]
 };
