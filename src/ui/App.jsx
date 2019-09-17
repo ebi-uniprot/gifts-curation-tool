@@ -21,7 +21,7 @@ import Broken from './Broken';
 import Message from './components/Message';
 import NoResults from './NoResults';
 import Feedback from './Feedback';
-import authConfig from '../auth-config.js';
+import authConfig from '../auth-config';
 
 import '../styles/Gifts.scss';
 
@@ -33,6 +33,7 @@ class App extends Component {
       ? queryString.parse(this.props.location.search).searchTerm
       : '',
     authenticated: false,
+    hasExpiredToken: false,
     user: {
       id: null,
       name: null,
@@ -64,14 +65,23 @@ class App extends Component {
         authConfig.aap.public_key,
         { algorithm: 'RS256' },
       );
- 
+
+      const utcNow = parseInt(new Date().getTime() / 1000, 10);
+
+      if (typeof userToken.exp !== 'undefined' && userToken.exp - utcNow <= 0) {
+        cookies.remove('userToken', { path: '/' });
+
+        this.tokenIsExpired();
+        return false;
+      }
+
       this.setState({
         authenticated: true,
         jwt: rawUserToken,
       }, successCallback);
 
       return true;
-    } catch(e) {
+    } catch (e) {
       this.setState({
         authenticated: false,
         jwt: null,
@@ -79,8 +89,6 @@ class App extends Component {
 
       return false;
     }
-
-    return false;
   }
 
   onLogout = () => {
@@ -148,6 +156,7 @@ class App extends Component {
   tokenIsExpired = () => {
     this.setState({
       authenticated: false,
+      hasExpiredToken: true,
       user: {
         id: null,
         name: null,
@@ -160,7 +169,7 @@ class App extends Component {
     const rawUserToken = cookies.get('userToken') || undefined;
 
     try {
-      if (typeof rawUserToken === 'undefined') {
+      if (!rawUserToken) {
         return false;
       }
 
@@ -176,11 +185,9 @@ class App extends Component {
       }
 
       return true;
-    } catch(e) {
+    } catch (e) {
       return false;
     }
-
-    return false;
   };
 
   clearMessage = () => this.setState({ message: null });
@@ -189,7 +196,7 @@ class App extends Component {
     const { cookies } = this.props;
 
     this.setState({
-      validToken: true,
+      hasExpiredToken: false,
     });
 
     cookies.remove('userToken', { path: '/' });
@@ -345,8 +352,12 @@ class App extends Component {
 
   render() {
     const {
-      authenticated, message, exploreMappingsByOrganism,
+      authenticated,
+      message,
+      exploreMappingsByOrganism,
+      hasExpiredToken,
     } = this.state;
+
     const LoginComponent = () => (
       <Login onLoginSuccess={this.onLoginSuccess} onLoginFailure={this.onLoginFailure} />
     );
@@ -378,9 +389,9 @@ class App extends Component {
         <section id="main-content-area" role="main">
           <div id="root">
             {message !== null ? <Message details={message} onClose={this.clearMessage} /> : null}
-            {/* validToken === false ? (
+            {hasExpiredToken ? (
               <Message details={tokenIsExpiredMessage} onClose={this.clearExpiredLoginMessage} />
-            ) : null */}
+            ) : null}
             <Switch>
               <Route exact path={`${BASE_URL}/`} render={() => <Home {...appProps} />} />
               <Route

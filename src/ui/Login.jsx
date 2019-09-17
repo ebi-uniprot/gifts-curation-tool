@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { withCookies } from 'react-cookie';
 import * as jwt from 'jsonwebtoken';
 
-import authConfig from '../auth-config.js';
+import authConfig from '../auth-config';
 import '../styles/Home.scss';
 
 class Login extends Component {
@@ -22,29 +22,33 @@ class Login extends Component {
     }
 
     try {
-      const userToken = jwt.verify(message.data, authConfig.aap.public_key, { algorithm: 'RS256'});
-      const nowEpochTime = Date.now();
-      const maxAge = userToken.exp - Math.floor(nowEpochTime / 1000);
-
-      cookies.set('userToken', message.data, { path: '/', maxAge: 30 });
-
-      const user = {
-        id: userToken.sub,
-        name: userToken.name,
-      };
+      const userToken = jwt.verify(
+        message.data,
+        authConfig.aap.public_key,
+        { algorithm: 'RS256' },
+      );
 
       for (let i = 0; i < userToken.domains.length; i += 1) {
         const domain = userToken.domains[i];
 
         if (domain === authConfig.gifts.domain.name || domain === authConfig.gifts.domain.id) {
+          const user = {
+            id: userToken.sub,
+            name: userToken.name,
+          };
+
           onLoginSuccess(user);
+
+          const nowEpochTime = Date.now();
+          const maxAge = userToken.exp - Math.floor(nowEpochTime / 1000);
+
+          cookies.set('userToken', message.data, { path: '/', maxAge });
           return true;
         }
       }
 
       return false;
-
-    } catch(e) {
+    } catch (e) {
       onLoginFailure();
       return false;
     }
@@ -55,6 +59,7 @@ class Login extends Component {
 
 Login.propTypes = {
   onLoginSuccess: PropTypes.func.isRequired,
+  onLoginFailure: PropTypes.func.isRequired,
   cookies: PropTypes.shape({}).isRequired,
 };
 

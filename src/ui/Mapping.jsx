@@ -95,7 +95,6 @@ class Mapping extends Component {
           status,
           labels,
           comments: comments.reverse(),
-          isLoggedIn: isLoggedIn && tokenIsNotExpired,
         });
       }))
       .catch(() => {
