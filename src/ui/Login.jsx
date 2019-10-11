@@ -26,7 +26,7 @@ class Login extends Component {
       const userToken = jwt.verify(
         message.data,
         authConfig.aap.public_key,
-        authConfig.aap.algorithm,
+        { algorithm: authConfig.aap.algorithm },
       );
 
       for (let i = 0; i < userToken.domains.length; i += 1) {

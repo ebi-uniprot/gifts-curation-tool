@@ -101,7 +101,7 @@ class App extends Component {
     const userToken = jwt.verify(
       rawUserToken,
       authConfig.aap.public_key,
-      authConfig.aap.algorithm,
+      { algorithm: authConfig.aap.algorithm },
     );
 
     if (typeof userToken.exp !== 'undefined' && userToken.exp <= getSecondsSinceEpoch()) {
