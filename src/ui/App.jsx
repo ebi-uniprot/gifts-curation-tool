@@ -68,26 +68,6 @@ class App extends Component {
       });
   }
 
-  verifyJWT = () => {
-    const { cookies } = this.props;
-
-    const rawUserToken = cookies.get('userToken');
-    const userToken = jwt.verify(
-      rawUserToken,
-      authConfig.aap.public_key,
-      authConfig.aap.algorithm,
-    );
-
-    if (typeof userToken.exp !== 'undefined' && userToken.exp <= getSecondsSinceEpoch()) {
-      cookies.remove('userToken', { path: '/' });
-
-      this.tokenIsExpired();
-      return false;
-    }
-
-    return true;
-  }
-
   setAuthState(successCallback = () => null, failureCallback = () => null) {
     const { cookies } = this.props;
 
@@ -112,6 +92,26 @@ class App extends Component {
 
       return false;
     }
+  }
+
+  verifyJWT = () => {
+    const { cookies } = this.props;
+
+    const rawUserToken = cookies.get('userToken');
+    const userToken = jwt.verify(
+      rawUserToken,
+      authConfig.aap.public_key,
+      authConfig.aap.algorithm,
+    );
+
+    if (typeof userToken.exp !== 'undefined' && userToken.exp <= getSecondsSinceEpoch()) {
+      cookies.remove('userToken', { path: '/' });
+
+      this.tokenIsExpired();
+      return false;
+    }
+
+    return true;
   }
 
   onLogout = () => {
