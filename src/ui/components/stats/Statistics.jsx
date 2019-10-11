@@ -64,7 +64,11 @@ class Statistics extends Component {
               between resources and support mappings between entities.
             </p>
             <p>
-              <a href="https://www.ebi.ac.uk/data-protection/privacy-notice/gifts" target="_blank">
+              <a
+                href="https://www.ebi.ac.uk/data-protection/privacy-notice/gifts"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 Privacy Notice for GIFTS Collaborative Annotation Portal
               </a>
             </p>

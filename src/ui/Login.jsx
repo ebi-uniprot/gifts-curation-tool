@@ -1,49 +1,56 @@
 import { Component } from 'react';
 import PropTypes from 'prop-types';
-import decode from 'jwt-decode';
 import { withCookies } from 'react-cookie';
-import '../styles/Home.scss';
+import * as jwt from 'jsonwebtoken';
 
-const GIFTS_DOMAIN = 'self.gifts';
-const GIFTS_DOMAIN_ID = 'dom-23a4a571-5193-4cdd-838b-097ee9440e12';
-const AAP_ENDPOINT_BASE = 'https://api.aai.ebi.ac.uk';
+import { getSecondsSinceEpoch } from './util/util';
+import authConfig from '../authConfig';
+import '../styles/Home.scss';
 
 class Login extends Component {
   componentDidMount() {
     window.addEventListener('message', this.onElixirResponse);
     this.windowRef = window
-      .open(`${AAP_ENDPOINT_BASE}/sso?from=${AUTH_CALLBACK_URL}`, 'elixir')
+      .open(`${authConfig.aap.url}/sso?from=${AUTH_CALLBACK_URL}`, 'elixir')
       .focus();
   }
 
   onElixirResponse = (message) => {
-    const { onLoginSuccess, cookies } = this.props;
+    const { onLoginSuccess, onLoginFailure, cookies } = this.props;
 
-    if (message.origin !== AAP_ENDPOINT_BASE) {
+    if (message.origin !== authConfig.aap.url) {
       return false;
     }
 
-    const jwt = decode(message.data);
-    cookies.set('jwt', message.data, { path: '/' });
-    let readonly = true;
-    const user = {
-      id: jwt.sub,
-      name: jwt.name,
-    };
+    try {
+      const userToken = jwt.verify(
+        message.data,
+        authConfig.aap.public_key,
+        { algorithm: authConfig.aap.algorithm },
+      );
 
-    for (let i = 0; i < jwt.domains.length; i += 1) {
-      const domain = jwt.domains[i];
+      for (let i = 0; i < userToken.domains.length; i += 1) {
+        const domain = userToken.domains[i];
 
-      if (domain === GIFTS_DOMAIN || domain === GIFTS_DOMAIN_ID) {
-        readonly = false;
-        onLoginSuccess(user, readonly);
-        return true;
+        if ([authConfig.gifts.domain.name, authConfig.gifts.domain.id].includes(domain)) {
+          const user = {
+            id: userToken.sub,
+            name: userToken.name,
+          };
+
+          onLoginSuccess(user);
+          const maxAge = userToken.exp - getSecondsSinceEpoch();
+
+          cookies.set('userToken', message.data, { path: '/', maxAge });
+          return true;
+        }
       }
-    }
 
-    // Default behaviour
-    onLoginSuccess(user, readonly);
-    return true;
+      return false;
+    } catch (e) {
+      onLoginFailure();
+      return false;
+    }
   };
 
   render = () => null;
@@ -51,6 +58,7 @@ class Login extends Component {
 
 Login.propTypes = {
   onLoginSuccess: PropTypes.func.isRequired,
+  onLoginFailure: PropTypes.func.isRequired,
   cookies: PropTypes.shape({}).isRequired,
 };
 

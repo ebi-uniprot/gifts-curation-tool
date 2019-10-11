@@ -8,6 +8,8 @@ import {
 import PropTypes from 'prop-types';
 import { withCookies } from 'react-cookie';
 import queryString from 'query-string';
+import * as jwt from 'jsonwebtoken';
+import axios from 'axios';
 
 import Layout from './Layout';
 import Home from './Home';
@@ -20,6 +22,8 @@ import Broken from './Broken';
 import Message from './components/Message';
 import NoResults from './NoResults';
 import Feedback from './Feedback';
+import authConfig from '../authConfig';
+import { getSecondsSinceEpoch } from './util/util';
 
 import '../styles/Gifts.scss';
 
@@ -31,18 +35,20 @@ class App extends Component {
       ? queryString.parse(this.props.location.search).searchTerm
       : '',
     authenticated: false,
-    readonly: true,
+    userToken: null,
+    hasExpiredToken: false,
     user: {
-      id: 'guest',
-      name: 'Guest',
+      id: null,
+      name: null,
     },
     message: null,
-    validToken: null,
     offset: 0,
     limit: 15,
     activeFacets: {},
     initialPage: 0,
     selectedFilters: {},
+    frontendVersion: `${FRONTEND_VERSION}`,
+    backendVersion: null,
   };
 
   constructor(props) {
@@ -51,16 +57,62 @@ class App extends Component {
   }
 
   componentWillMount() {
-    const { cookies } = this.props;
-    this.setState({
-      authenticated: cookies.get('authenticated') === '1',
-      jwt: cookies.get('jwt') || '',
-    });
+    this.setAuthState();
+
+    axios
+      .get(`${API_URL}/version/?format=json`)
+      .then(({ data }) => {
+        this.setState({
+          backendVersion: data.version,
+        });
+      });
   }
 
-  onLoginFailure = () => {
-    this.setState(this.defaultState);
-  };
+  setAuthState(successCallback = () => null, failureCallback = () => null) {
+    const { cookies } = this.props;
+
+    try {
+      const rawUserToken = cookies.get('userToken');
+
+      if (!this.verifyJWT()) {
+        return false;
+      }
+
+      this.setState({
+        authenticated: true,
+        userToken: rawUserToken,
+      }, successCallback);
+
+      return true;
+    } catch (e) {
+      this.setState({
+        authenticated: false,
+        userToken: null,
+      }, failureCallback);
+
+      return false;
+    }
+  }
+
+  verifyJWT = () => {
+    const { cookies } = this.props;
+
+    const rawUserToken = cookies.get('userToken');
+    const userToken = jwt.verify(
+      rawUserToken,
+      authConfig.aap.public_key,
+      { algorithm: authConfig.aap.algorithm },
+    );
+
+    if (typeof userToken.exp !== 'undefined' && userToken.exp <= getSecondsSinceEpoch()) {
+      cookies.remove('userToken', { path: '/' });
+
+      this.tokenIsExpired();
+      return false;
+    }
+
+    return true;
+  }
 
   onLogout = () => {
     const { history } = this.props;
@@ -105,45 +157,61 @@ class App extends Component {
 
   clearSearchTerm = callback => this.setState({ searchTerm: '' }, callback);
 
-  onLoginSuccess = (user, readonly) => {
-    const { history, cookies } = this.props;
+  onLoginSuccess = (user) => {
+    const { history } = this.props;
 
-    this.setState(
-      {
-        authenticated: true,
-        validToken: true,
-        readonly,
+    if (this.setAuthState()) {
+      this.setState({
         user,
-      },
-      () => {
+      }, () => {
         history.push(`${BASE_URL}/`);
-        cookies.set('authenticated', '1', { path: '/' });
-      },
-    );
+      });
+    }
   };
 
-  clearMessage = () => this.setState({ message: null });
+  onLoginFailure = () => {
+    const { cookies } = this.props;
+
+    this.setState(this.defaultState);
+    cookies.set('userToken', '', { path: '/' });
+  };
 
   tokenIsExpired = () => {
     this.setState({
-      validToken: false,
       authenticated: false,
-      readonly: true,
+      hasExpiredToken: true,
       user: {
-        id: 'guest',
-        name: 'Guest',
+        id: null,
+        name: null,
       },
     });
   };
+
+  hasValidAuthenticationToken = () => {
+    const { cookies } = this.props;
+    const rawUserToken = cookies.get('userToken') || undefined;
+
+    try {
+      if (!rawUserToken) {
+        return false;
+      }
+
+      return this.verifyJWT();
+    } catch (e) {
+      return false;
+    }
+  };
+
+  clearMessage = () => this.setState({ message: null });
 
   clearExpiredLoginMessage = () => {
     const { cookies } = this.props;
 
     this.setState({
-      validToken: true,
+      hasExpiredToken: false,
     });
 
-    cookies.remove('jwt', { path: '/' });
+    cookies.remove('userToken', { path: '/' });
   };
 
   exploreMappingsByOrganism = (organism) => {
@@ -296,8 +364,12 @@ class App extends Component {
 
   render() {
     const {
-      authenticated, message, validToken, exploreMappingsByOrganism,
+      authenticated,
+      message,
+      exploreMappingsByOrganism,
+      hasExpiredToken,
     } = this.state;
+
     const LoginComponent = () => (
       <Login onLoginSuccess={this.onLoginSuccess} onLoginFailure={this.onLoginFailure} />
     );
@@ -316,6 +388,7 @@ class App extends Component {
       resetSearchAndFacets: this.resetSearchAndFacets,
       goToMappingsPage: this.goToMappingsPage,
       toggleFilter: this.toggleFilter,
+      hasValidAuthenticationToken: this.hasValidAuthenticationToken,
     };
 
     const tokenIsExpiredMessage = {
@@ -328,9 +401,9 @@ class App extends Component {
         <section id="main-content-area" role="main">
           <div id="root">
             {message !== null ? <Message details={message} onClose={this.clearMessage} /> : null}
-            {validToken === false ? (
+            {hasExpiredToken && (
               <Message details={tokenIsExpiredMessage} onClose={this.clearExpiredLoginMessage} />
-            ) : null}
+            )}
             <Switch>
               <Route exact path={`${BASE_URL}/`} render={() => <Home {...appProps} />} />
               <Route

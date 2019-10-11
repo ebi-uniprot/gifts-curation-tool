@@ -3,7 +3,6 @@ import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import axios from 'axios';
 import { withCookies } from 'react-cookie';
-import decode from 'jwt-decode';
 
 import LoadingSpinner from './components/LoadingSpinner';
 import Alignment from './components/alignment/Alignment';
@@ -21,7 +20,6 @@ class Mapping extends Component {
     details: null,
     status: null,
     comments: null,
-    isLoggedIn: null,
     mappingId: null,
     labels: null,
     showAlignment: true,
@@ -67,9 +65,9 @@ class Mapping extends Component {
   };
 
   getMappingDetails = (mappingId, isLoggedIn) => {
-    const { history, cookies } = this.props;
+    const { history, cookies, hasValidAuthenticationToken } = this.props;
 
-    const tokenIsNotExpired = this.forceLoginIfTokenIsExpired();
+    const tokenIsNotExpired = hasValidAuthenticationToken();
     const config = {};
     const apiCalls = [
       axios.get(`${API_URL}/mapping/${mappingId}/?format=json`, config),
@@ -78,7 +76,7 @@ class Mapping extends Component {
 
     if (isLoggedIn && tokenIsNotExpired) {
       config.headers = {
-        Authorization: `Bearer ${cookies.get('jwt')}`,
+        Authorization: `Bearer ${cookies.get('userToken')}`,
       };
 
       apiCalls.push(axios.get(`${API_URL}/mapping/${mappingId}/comments/?format=json`, config));
@@ -97,34 +95,11 @@ class Mapping extends Component {
           status,
           labels,
           comments: comments.reverse(),
-          isLoggedIn: isLoggedIn && tokenIsNotExpired,
         });
       }))
       .catch(() => {
         history.push(`${BASE_URL}/error`);
       });
-  };
-
-  forceLoginIfTokenIsExpired = () => {
-    const { cookies, tokenIsExpired } = this.props;
-    const jwt = cookies.get('jwt') || undefined;
-    let decoded = {};
-
-    if (typeof jwt !== 'undefined' && jwt !== 'EXPIRED') {
-      decoded = decode(jwt);
-    }
-
-    const utcNow = parseInt(new Date().getTime() / 1000, 10);
-
-    if (typeof decoded.exp !== 'undefined' && decoded.exp - utcNow <= 0) {
-      cookies.remove('authenticated', { path: '/' });
-      cookies.set('jwt', 'EXPIRED', { path: '/' });
-
-      tokenIsExpired();
-      return false;
-    }
-
-    return true;
   };
 
   toggleDisplayAlignment() {
@@ -145,10 +120,13 @@ class Mapping extends Component {
       details,
       status,
       comments,
-      isLoggedIn,
       labels,
       showAlignment,
     } = this.state;
+
+    const {
+      isLoggedIn,
+    } = this.props;
 
     const { mapping, relatedEntries, taxonomy } = details;
     const { mappingId } = mapping;
@@ -221,10 +199,10 @@ Mapping.propTypes = {
       mappingId: PropTypes.string,
     }),
   }).isRequired,
-  tokenIsExpired: PropTypes.func.isRequired,
   cookies: PropTypes.shape({}).isRequired,
   isLoggedIn: PropTypes.bool.isRequired,
   location: PropTypes.shape({}).isRequired,
+  hasValidAuthenticationToken: PropTypes.func.isRequired,
 };
 
 export default withCookies(withRouter(Mapping));

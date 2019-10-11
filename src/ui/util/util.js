@@ -14,3 +14,5 @@ export const formatStatusName = (name) => {
       return 'Not reviewed';
   }
 };
+
+export const getSecondsSinceEpoch = () => Math.floor(Date.now() / 1000);

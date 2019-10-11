@@ -3,7 +3,6 @@ import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import axios from 'axios';
 import { withCookies } from 'react-cookie';
-import decode from 'jwt-decode';
 
 import LoadingSpinner from './components/LoadingSpinner';
 import UnmappedHeader from './components/UnmappedHeader';
@@ -18,7 +17,6 @@ class Unmapped extends Component {
     details: null,
     status: null,
     comments: null,
-    isLoggedIn: null,
     id: null,
     labels: null,
   };
@@ -62,9 +60,9 @@ class Unmapped extends Component {
   };
 
   getUnmappedDetails = (id, isLoggedIn) => {
-    const { history, cookies } = this.props;
+    const { history, cookies, hasValidAuthenticationToken } = this.props;
 
-    const tokenIsNotExpired = this.forceLoginIfTokenIsExpired();
+    const tokenIsNotExpired = hasValidAuthenticationToken();
     const config = {};
     const apiCalls = [
       axios.get(`${API_URL}/unmapped/${id}/?format=json`, config),
@@ -73,7 +71,7 @@ class Unmapped extends Component {
 
     if (isLoggedIn && tokenIsNotExpired) {
       config.headers = {
-        Authorization: `Bearer ${cookies.get('jwt')}`,
+        Authorization: `Bearer ${cookies.get('userToken')}`,
       };
 
       apiCalls.push(axios.get(`${API_URL}/unmapped/${id}/comments/?format=json`, config));
@@ -90,35 +88,12 @@ class Unmapped extends Component {
           details,
           status: status || 'NOT_REVIEWED',
           comments: comments.reverse(),
-          isLoggedIn: isLoggedIn && tokenIsNotExpired,
         });
       }))
       .catch(() => {
         history.push(`${BASE_URL}/error`);
       });
   }
-
-  forceLoginIfTokenIsExpired = () => {
-    const { cookies, tokenIsExpired } = this.props;
-    const jwt = cookies.get('jwt') || undefined;
-    let decoded = {};
-
-    if (typeof jwt !== 'undefined' && jwt !== 'EXPIRED') {
-      decoded = decode(jwt);
-    }
-
-    const utcNow = parseInt(new Date().getTime() / 1000, 10);
-
-    if (typeof decoded.exp !== 'undefined' && decoded.exp - utcNow <= 0) {
-      cookies.remove('authenticated', { path: '/' });
-      cookies.set('jwt', 'EXPIRED', { path: '/' });
-
-      tokenIsExpired();
-      return false;
-    }
-
-    return true;
-  };
 
   render() {
     // eslint-disable-next-line react/destructuring-assignment
@@ -130,8 +105,11 @@ class Unmapped extends Component {
       details,
       status,
       comments,
-      isLoggedIn,
     } = this.state;
+
+    const {
+      isLoggedIn,
+    } = this.props;
 
     const { entry } = details;
     const { id } = entry;
@@ -173,10 +151,10 @@ Unmapped.propTypes = {
       id: PropTypes.string,
     }),
   }).isRequired,
-  tokenIsExpired: PropTypes.func.isRequired,
   cookies: PropTypes.shape({}).isRequired,
   isLoggedIn: PropTypes.bool.isRequired,
   location: PropTypes.shape({}).isRequired,
+  hasValidAuthenticationToken: PropTypes.func.isRequired,
 };
 
 export default withCookies(withRouter(Unmapped));
