@@ -34,7 +34,7 @@ class StatusChangeControl extends Component {
     };
 
     const config = {
-      headers: { Authorization: `Bearer ${cookies.get('jwt')}` },
+      headers: { Authorization: `Bearer ${cookies.get('userToken')}` },
     };
 
     axios

@@ -76,7 +76,7 @@ class Mapping extends Component {
 
     if (isLoggedIn && tokenIsNotExpired) {
       config.headers = {
-        Authorization: `Bearer ${cookies.get('jwt')}`,
+        Authorization: `Bearer ${cookies.get('userToken')}`,
       };
 
       apiCalls.push(axios.get(`${API_URL}/mapping/${mappingId}/comments/?format=json`, config));

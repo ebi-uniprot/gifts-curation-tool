@@ -17,7 +17,7 @@ const Layout = (props) => {
       </section>
       <div className="footer-versions">
         <span>
-          {`Front-end v${frontendVersion} || Back-end v${backendVersion}`}
+          {`Front-end v${frontendVersion} - Back-end v${backendVersion}`}
         </span>
       </div>
     </div>

@@ -3,7 +3,8 @@ import PropTypes from 'prop-types';
 import { withCookies } from 'react-cookie';
 import * as jwt from 'jsonwebtoken';
 
-import authConfig from '../auth-config';
+import { getSecondsSinceEpoch } from './util/util';
+import authConfig from '../authConfig';
 import '../styles/Home.scss';
 
 class Login extends Component {
@@ -25,22 +26,20 @@ class Login extends Component {
       const userToken = jwt.verify(
         message.data,
         authConfig.aap.public_key,
-        { algorithm: 'RS256' },
+        authConfig.aap.algorithm,
       );
 
       for (let i = 0; i < userToken.domains.length; i += 1) {
         const domain = userToken.domains[i];
 
-        if (domain === authConfig.gifts.domain.name || domain === authConfig.gifts.domain.id) {
+        if ([authConfig.gifts.domain.name, authConfig.gifts.domain.id].includes(domain)) {
           const user = {
             id: userToken.sub,
             name: userToken.name,
           };
 
           onLoginSuccess(user);
-
-          const nowEpochTime = Date.now();
-          const maxAge = userToken.exp - Math.floor(nowEpochTime / 1000);
+          const maxAge = userToken.exp - getSecondsSinceEpoch();
 
           cookies.set('userToken', message.data, { path: '/', maxAge });
           return true;

@@ -22,7 +22,8 @@ import Broken from './Broken';
 import Message from './components/Message';
 import NoResults from './NoResults';
 import Feedback from './Feedback';
-import authConfig from '../auth-config';
+import authConfig from '../authConfig';
+import { getSecondsSinceEpoch } from './util/util';
 
 import '../styles/Gifts.scss';
 
@@ -34,6 +35,7 @@ class App extends Component {
       ? queryString.parse(this.props.location.search).searchTerm
       : '',
     authenticated: false,
+    userToken: null,
     hasExpiredToken: false,
     user: {
       id: null,
@@ -55,8 +57,7 @@ class App extends Component {
   }
 
   componentWillMount() {
-    const { cookies } = this.props;
-    this.getAuthCookiesAndSetAuthState();
+    this.setAuthState();
 
     axios
       .get(`${API_URL}/version/?format=json`)
@@ -65,44 +66,49 @@ class App extends Component {
           backendVersion: data.version,
         });
       });
-
-    this.setState({
-      authenticated: cookies.get('authenticated') === '1',
-      jwt: cookies.get('jwt') || '',
-    });
   }
 
-  getAuthCookiesAndSetAuthState(successCallback = () => null, failurCallback = () => null) {
+  verifyJWT = () => {
+    const { cookies } = this.props;
+
+    const rawUserToken = cookies.get('userToken');
+    const userToken = jwt.verify(
+      rawUserToken,
+      authConfig.aap.public_key,
+      authConfig.aap.algorithm,
+    );
+
+    if (typeof userToken.exp !== 'undefined' && userToken.exp <= getSecondsSinceEpoch()) {
+      cookies.remove('userToken', { path: '/' });
+
+      this.tokenIsExpired();
+      return false;
+    }
+
+    return true;
+  }
+
+  setAuthState(successCallback = () => null, failureCallback = () => null) {
     const { cookies } = this.props;
 
     try {
       const rawUserToken = cookies.get('userToken');
-      const userToken = jwt.verify(
-        rawUserToken,
-        authConfig.aap.public_key,
-        { algorithm: 'RS256' },
-      );
 
-      const utcNow = parseInt(new Date().getTime() / 1000, 10);
-
-      if (typeof userToken.exp !== 'undefined' && userToken.exp - utcNow <= 0) {
-        cookies.remove('userToken', { path: '/' });
-
-        this.tokenIsExpired();
+      if (!this.verifyJWT()) {
         return false;
       }
 
       this.setState({
         authenticated: true,
-        jwt: rawUserToken,
+        userToken: rawUserToken,
       }, successCallback);
 
       return true;
     } catch (e) {
       this.setState({
         authenticated: false,
-        jwt: null,
-      }, failurCallback);
+        userToken: null,
+      }, failureCallback);
 
       return false;
     }
@@ -154,7 +160,7 @@ class App extends Component {
   onLoginSuccess = (user) => {
     const { history } = this.props;
 
-    if (this.getAuthCookiesAndSetAuthState()) {
+    if (this.setAuthState()) {
       this.setState({
         user,
       }, () => {
@@ -190,18 +196,7 @@ class App extends Component {
         return false;
       }
 
-      const decoded = jwt.verify(rawUserToken, authConfig.aap.public_key, { algorithm: 'RS256' });
-
-      const utcNow = parseInt(new Date().getTime() / 1000, 10);
-
-      if (typeof decoded.exp !== 'undefined' && decoded.exp - utcNow <= 0) {
-        cookies.remove('userToken', { path: '/' });
-
-        this.tokenIsExpired();
-        return false;
-      }
-
-      return true;
+      return this.verifyJWT();
     } catch (e) {
       return false;
     }
@@ -406,9 +401,9 @@ class App extends Component {
         <section id="main-content-area" role="main">
           <div id="root">
             {message !== null ? <Message details={message} onClose={this.clearMessage} /> : null}
-            {hasExpiredToken ? (
+            {hasExpiredToken && (
               <Message details={tokenIsExpiredMessage} onClose={this.clearExpiredLoginMessage} />
-            ) : null}
+            )}
             <Switch>
               <Route exact path={`${BASE_URL}/`} render={() => <Home {...appProps} />} />
               <Route

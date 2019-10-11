@@ -10,8 +10,7 @@ class Logout extends Component {
     super(props);
     const { onLogout, cookies } = props;
 
-    cookies.remove('authenticated', { path: '/' });
-    cookies.remove('jwt', { path: '/' });
+    cookies.remove('userToken', { path: '/' });
     onLogout();
   }
 

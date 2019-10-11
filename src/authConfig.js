@@ -31,6 +31,7 @@ const authConfig = {
       '-----END CERTIFICATE-----',
     ].join(''),
   },
+  algorithm: 'RS256',
 };
 
 export default authConfig;

@@ -67,7 +67,7 @@ class LabelsSection extends Component {
     const config = {
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${cookies.get('jwt')}`,
+        Authorization: `Bearer ${cookies.get('userToken')}`,
       },
     };
 
@@ -96,7 +96,7 @@ class LabelsSection extends Component {
     const config = {
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${cookies.get('jwt')}`,
+        Authorization: `Bearer ${cookies.get('userToken')}`,
       },
     };
 
