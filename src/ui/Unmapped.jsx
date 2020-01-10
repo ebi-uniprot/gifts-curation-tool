@@ -8,6 +8,9 @@ import LoadingSpinner from './components/LoadingSpinner';
 import UnmappedHeader from './components/UnmappedHeader';
 import UnmappedStatusControl from './components/UnmappedStatusControl';
 import UnmappedComments from './components/comments/UnmappedComments';
+import StatusIcon from './components/status/StatusIcon';
+import StatusText from './components/status/StatusText';
+import { statusesList } from './util/util';
 
 import '../styles/Unmapped.scss';
 import '../../node_modules/simplemde/dist/simplemde.min.css';
@@ -118,12 +121,8 @@ class Unmapped extends Component {
       <Fragment>
         <div className="row column medium-12">
           <div className="status-wrapper">
-            <UnmappedStatusControl
-              id={id}
-              isLoggedIn={isLoggedIn}
-              status={status}
-              onChange={this.onStatusChange}
-            />
+            <StatusIcon status={status} />
+            <StatusText value={status} labels={statusesList} />
           </div>
           <UnmappedHeader unmapped={details} />
         </div>

@@ -9,11 +9,12 @@ import Alignment from './components/alignment/Alignment';
 import LabelsSection from './components/label/LabelsSection';
 import RelatedMappingsSection from './components/RelatedMappingsSection';
 import MappingHeader from './components/MappingHeader';
-import MappingStatusSection from './components/MappingStatusControl';
+import StatusIcon from './components/status/StatusIcon';
+import StatusText from './components/status/StatusText';
 import MappingComments from './components/comments/MappingComments';
+import { statusesList } from './util/util';
 
 import '../styles/Mapping.scss';
-import '../../node_modules/simplemde/dist/simplemde.min.css';
 
 class Mapping extends Component {
   defaultState = {
@@ -23,6 +24,7 @@ class Mapping extends Component {
     mappingId: null,
     labels: null,
     showAlignment: true,
+    originalStatus: null,
   };
 
   constructor(props) {
@@ -95,6 +97,7 @@ class Mapping extends Component {
           status,
           labels,
           comments: comments.reverse(),
+          originalStatus: status,
         });
       }))
       .catch(() => {
@@ -119,6 +122,7 @@ class Mapping extends Component {
     const {
       details,
       status,
+      originalStatus,
       comments,
       labels,
       showAlignment,
@@ -135,12 +139,8 @@ class Mapping extends Component {
       <Fragment>
         <div className="row column medium-12">
           <div className="status-wrapper">
-            <MappingStatusSection
-              id={mappingId}
-              isLoggedIn={isLoggedIn}
-              status={status}
-              onChange={this.onStatusChange}
-            />
+            <StatusIcon status={status} />
+            <StatusText value={status} labels={statusesList} />
           </div>
           <MappingHeader mapping={mapping} taxonomy={taxonomy} />
         </div>
@@ -177,13 +177,16 @@ class Mapping extends Component {
 
         <div className="row mapping__comments__wrapper">
           <div className="column medium-12">
+
             <MappingComments
               id={mappingId}
               isLoggedIn={isLoggedIn}
               comments={comments}
               mappingStatus={status}
+              originalMappingStatus={originalStatus}
               afterSaveCallback={this.getMappingDetails}
               onMappingStatusChange={this.onStatusChange}
+              notificationsList={details.emailRecipientsList}
             />
           </div>
         </div>
