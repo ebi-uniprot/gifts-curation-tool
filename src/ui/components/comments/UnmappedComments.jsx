@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
 
 import CommentsSection from './CommentsSection';
+import StatusChangeControl from '../status/StatusChangeControl';
 import UnmappedStatusControl from '../UnmappedStatusControl';
 
 const UnmappedComments = (props) => {
@@ -10,32 +11,25 @@ const UnmappedComments = (props) => {
     isLoggedIn,
     comments,
     mappingStatus,
+    originalMappingStatus,
     onMappingStatusChange,
     afterSaveCallback,
+    notificationsList,
   } = props;
 
   const apiUri = `${API_URL}/unmapped/${id}/comments/`;
 
-  const unmappedStatusControl = (
-    <UnmappedStatusControl
-      id={id}
-      isLoggedIn={isLoggedIn}
+  const statusChangeControl = (
+    <StatusChangeControl
       status={mappingStatus}
       onChange={onMappingStatusChange}
-      editable={true}
     />
   );
 
   return (
     <CommentsSection
-      id={id}
       isLoggedIn={isLoggedIn}
       comments={comments}
-      mappingStatus={mappingStatus}
-      afterSaveCallback={afterSaveCallback}
-      mapped={false}
-      statusChangeControl={unmappedStatusControl}
-      apiUri={apiUri}
     />
   );
 };

@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
 import ReviewStatus from './ReviewStatus';
-import StatusIndicator from './StatusIndicator';
+import StatusIcon from './status/StatusIcon';
 import AlignmentIndicator from './alignment/AlignmentIndicator';
 import Position from './Position';
 
@@ -12,7 +12,7 @@ const RelatedMapping = (props) => {
   return (
     <tr className="related-mapping">
       <td>
-        <StatusIndicator status={item.status} />
+        <StatusIcon status={item.status} />
       </td>
       <td>
         <ReviewStatus entryType={item.uniprotEntry.entryType} />
