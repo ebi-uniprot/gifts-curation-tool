@@ -1,0 +1,35 @@
+
+
+.send-notification-ui-wrapper {
+  display: flex;
+  margin-bottom: 1rem;
+
+  .label {
+    height: 2.5rem;
+    line-height: 2.5rem;
+    margin-right: 1rem;
+    font-size: 1rem;
+  }
+
+  .react-select-wrapper {
+    width: 100%;
+    z-index: 100;
+  }
+}
+
+
+.react-select {
+  
+  &__input {
+
+    input,
+    input:focus {
+      margin: 0;
+      box-shadow: none;
+    }
+  }
+
+  &__menu {
+    z-index: 5000;
+  }
+}

@@ -2,6 +2,29 @@ body {
   margin: 0;
   padding: 0;
   font-family: sans-serif;
+
+  &.active-modal {
+    overflow: hidden;
+
+    #modal {
+      display: block;
+    }
+  }
+}
+
+#content {
+  position: relative;
+}
+
+#modal {
+  background: var(--secondary-color);
+  position: fixed;
+  width: 200%;
+  height: 300%;
+  opacity: .7;
+  z-index: 999;
+  top: -50%;
+  display: none;
 }
 
 #main-content-area {

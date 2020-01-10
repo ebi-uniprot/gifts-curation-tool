@@ -1,10 +1,11 @@
 
 .status-change-form {
-  display: flex;
-  display: inline-flex;
+  // display: flex;
+  // display: inline-flex;
+  flex-grow: 1;
 }
 
 .status-change-form select {
-  flex-grow: 1;
-  width: 200px;
+  // flex-grow: 1;
+  // width: 200px;
 }
