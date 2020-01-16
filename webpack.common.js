@@ -41,5 +41,9 @@ module.exports = {
     new webpack.DefinePlugin({
       FRONTEND_VERSION: JSON.stringify(require("./package.json").version)
     })
-  ]
+  ],
+  node: {
+    fs: 'empty'
+  },
+  target: 'web',
 };
