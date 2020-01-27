@@ -131,7 +131,7 @@ class ResultsTable extends Component {
           <div className="table-cell">
             <strong>
               <ReviewStatus entryType={mapping.ensemblTranscript.select ? 'Ensembl' : ''} />
-              {mapping.ensemblTranscript.enstId}
+              {mapping.ensemblTranscript.enstId}.{mapping.ensemblTranscript.enstVersion}
             </strong>
           </div>
           <div className="table-cell">

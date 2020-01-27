@@ -29,7 +29,7 @@ const MappingHeader = (props) => {
             rel="noopener noreferrer"
           >
             <ReviewStatus entryType={mapping.ensemblTranscript.select ? 'Ensembl' : ''} />
-            {mapping.ensemblTranscript.enstId}
+            {`${mapping.ensemblTranscript.enstId}.${mapping.ensemblTranscript.enstVersion}`}
           </Link>
         </h2>
         <div>
