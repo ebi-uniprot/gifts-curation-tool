@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 import CommentsSection from './CommentsSection';
 import StatusChangeControl from '../status/StatusChangeControl';
-import UnmappedStatusControl from '../UnmappedStatusControl';
+import CommentsAndStatusModal from './CommentsAndStatusModal';
 
 const UnmappedComments = (props) => {
   const {
@@ -17,7 +17,8 @@ const UnmappedComments = (props) => {
     notificationsList,
   } = props;
 
-  const apiUri = `${API_URL}/unmapped/${id}/comments/`;
+  const commentsApiUri = `${API_URL}/unmapped/${id}/comments/`;
+  const statusApiUri = `${API_URL}/unmapped/${id}/status/`;
 
   const statusChangeControl = (
     <StatusChangeControl
@@ -27,10 +28,25 @@ const UnmappedComments = (props) => {
   );
 
   return (
-    <CommentsSection
-      isLoggedIn={isLoggedIn}
-      comments={comments}
-    />
+    <Fragment>
+      <CommentsSection
+        isLoggedIn={isLoggedIn}
+        comments={comments}
+      />
+
+      <CommentsAndStatusModal
+        id={id}
+        isLoggedIn={isLoggedIn}
+        mappingStatus={mappingStatus}
+        originalMappingStatus={originalMappingStatus}
+        afterSaveCallback={afterSaveCallback}
+        statusChangeControl={statusChangeControl}
+        notificationsList={notificationsList}
+        commentsApiUri={commentsApiUri}
+        statusApiUri={statusApiUri}
+        mapped
+      />
+    </Fragment>
   );
 };
 
@@ -44,10 +60,13 @@ UnmappedComments.propTypes = {
   onMappingStatusChange: PropTypes.func.isRequired,
   afterSaveCallback: PropTypes.func.isRequired,
   comments: PropTypes.arrayOf(PropTypes.shape({})),
+  originalMappingStatus: PropTypes.string.isRequired,
+  notificationsList: PropTypes.shape({}),
 };
 
 UnmappedComments.defaultProps = {
   comments: [],
+  notificationsList: {},
 };
 
 export default UnmappedComments;
