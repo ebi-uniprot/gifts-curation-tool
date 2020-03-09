@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import axios from 'axios';
-import { isEqual } from 'lodash-es';
+import isEqual from 'lodash/isEqual';
 
 import LoadingSpinner from './components/LoadingSpinner';
 import ResultsTable from './components/ResultsTable';

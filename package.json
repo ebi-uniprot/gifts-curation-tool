@@ -48,7 +48,7 @@
     "axios": "^0.18.0",
     "franklin-sites": "^0.0.21",
     "jsonwebtoken": "^8.5.1",
-    "lodash-es": "4.17.15",
+    "lodash": "^4.17.15",
     "path": "^0.12.7",
     "prop-types": "15.7.2",
     "query-string": "^6.1.0",
