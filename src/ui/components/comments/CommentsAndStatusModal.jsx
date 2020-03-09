@@ -43,6 +43,7 @@ const createTextEditor = (
   return textEditor;
 };
 
+/* eslint-disable consistent-return */
 const saveComment = (
   id,
   textEditor,
@@ -59,6 +60,10 @@ const saveComment = (
     email_recipient_ids: notificationListsIds,
     text: textEditor.value(),
   };
+
+  if (!comment.text || comment.text.length === 0) {
+    return false;
+  }
 
   const config = {
     headers: {
@@ -277,6 +282,8 @@ CommentsAndStatusModal.propTypes = {
   ).isRequired,
   mappingStatus: PropTypes.string.isRequired,
   originalMappingStatus: PropTypes.string.isRequired,
+  commentsApiUri: PropTypes.string.isRequired,
+  statusApiUri: PropTypes.string.isRequired,
 };
 
 export default withRouter(withCookies(CommentsAndStatusModal));

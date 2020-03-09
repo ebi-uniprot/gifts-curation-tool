@@ -6,7 +6,6 @@ import { withCookies } from 'react-cookie';
 
 import LoadingSpinner from './components/LoadingSpinner';
 import UnmappedHeader from './components/UnmappedHeader';
-import UnmappedStatusControl from './components/UnmappedStatusControl';
 import UnmappedComments from './components/comments/UnmappedComments';
 import StatusIcon from './components/status/StatusIcon';
 import StatusText from './components/status/StatusText';
@@ -22,6 +21,7 @@ class Unmapped extends Component {
     comments: null,
     id: null,
     labels: null,
+    originalStatus: null,
   };
 
   constructor(props) {
@@ -89,8 +89,9 @@ class Unmapped extends Component {
 
         this.setState({
           details,
-          status: status || 'NOT_REVIEWED',
+          status,
           comments: comments.reverse(),
+          originalStatus: status,
         });
       }))
       .catch(() => {
@@ -107,6 +108,7 @@ class Unmapped extends Component {
     const {
       details,
       status,
+      originalStatus,
       comments,
     } = this.state;
 
@@ -133,8 +135,10 @@ class Unmapped extends Component {
               isLoggedIn={isLoggedIn}
               comments={comments}
               mappingStatus={status}
+              originalMappingStatus={originalStatus}
               afterSaveCallback={this.getUnmappedDetails}
               onMappingStatusChange={this.onStatusChange}
+              notificationsList={details.emailRecipientsList}
             />
           </div>
         </div>
