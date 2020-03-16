@@ -52,6 +52,7 @@ class Alignment extends Component {
 
     this.setState({
       loading: true,
+      apiError: false,
     });
 
     axios
@@ -80,7 +81,11 @@ class Alignment extends Component {
       })
       .catch((e) => {
         console.log(e);
-        history.push(`${BASE_URL}/error`);
+
+        this.setState({
+          apiError: true,
+          loading: false,
+        });
       });
   };
 
@@ -265,11 +270,19 @@ class Alignment extends Component {
 
   render() {
     const {
-      alignments, loading, isTooLong,
+      alignments, loading, isTooLong, apiError,
     } = this.state;
 
     if (loading) {
       return <LoadingSpinner />;
+    }
+
+    if (apiError) {
+      return (
+        <div className="callout">
+          <em>An error happened during the loading of this alignment.</em>
+        </div>
+      );
     }
 
     if (isTooLong) {
