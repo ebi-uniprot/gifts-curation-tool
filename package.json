@@ -46,7 +46,7 @@
     "@babel/polyfill": "^7.0.0",
     "ajv": "^6.5.0",
     "axios": "^0.18.0",
-    "franklin-sites": "^0.0.21",
+    "franklin-sites": "^0.0.71",
     "jsonwebtoken": "^8.5.1",
     "lodash": "^4.17.15",
     "path": "^0.12.7",
