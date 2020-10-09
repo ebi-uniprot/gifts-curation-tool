@@ -11,7 +11,7 @@ class Login extends Component {
   componentDidMount() {
     window.addEventListener('message', this.onElixirResponse);
     this.windowRef = window
-      .open(`${authConfig.aap.url}/sso?from=${AUTH_CALLBACK_URL}`, 'elixir')
+      .open(`${authConfig.aap.url}/sso?from=${AUTH_CALLBACK_URL}&ttl=180`, 'elixir')
       .focus();
   }
 

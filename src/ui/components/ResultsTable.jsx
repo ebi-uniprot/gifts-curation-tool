@@ -2,9 +2,9 @@ import React, { Component, Fragment } from 'react';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import ReactPaginate from 'react-paginate';
-import isEqual from 'lodash-es/isEqual';
+import isEqual from 'lodash/isEqual';
 
-import StatusIndicator from './StatusIndicator';
+import StatusIcon from './status/StatusIcon';
 import Filters from './Filters';
 import ReviewStatus from './ReviewStatus';
 import AlignmentIndicator from './alignment/AlignmentIndicator';
@@ -121,7 +121,7 @@ class ResultsTable extends Component {
             }
           </div>
           <div className="table-cell">
-            <StatusIndicator status={mapping.status} />
+            <StatusIcon status={mapping.status} />
           </div>
           <div className="table-cell">{mapping.ensemblTranscript.ensgSymbol}</div>
           <div className="table-cell">{mapping.ensemblTranscript.ensgId}</div>
@@ -131,7 +131,10 @@ class ResultsTable extends Component {
           <div className="table-cell">
             <strong>
               <ReviewStatus entryType={mapping.ensemblTranscript.select ? 'Ensembl' : ''} />
-              {mapping.ensemblTranscript.enstId}
+              {mapping.ensemblTranscript.enstId
+                ? `${mapping.ensemblTranscript.enstId}.${mapping.ensemblTranscript.enstVersion}`
+                : null
+              }
             </strong>
           </div>
           <div className="table-cell">

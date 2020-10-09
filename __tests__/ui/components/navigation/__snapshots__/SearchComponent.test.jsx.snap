@@ -10,15 +10,11 @@ exports[`SearchField component should render 1`] = `
     placeholder="ENST00000620613, A7E2Y1, ..."
     type="text"
   />
-  <div
-    className="input-group-button"
+  <button
+    className="button"
+    type="submit"
   >
-    <button
-      className="button"
-      type="submit"
-    >
-      Submit
-    </button>
-  </div>
+    Submit
+  </button>
 </form>
 `;

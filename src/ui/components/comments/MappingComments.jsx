@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
 
 import CommentsSection from './CommentsSection';
-import MappingStatusControl from '../MappingStatusControl';
+import StatusChangeControl from '../status/StatusChangeControl';
+import CommentsAndStatusModal from './CommentsAndStatusModal';
 
 const MappingComments = (props) => {
   const {
@@ -10,33 +11,42 @@ const MappingComments = (props) => {
     isLoggedIn,
     comments,
     mappingStatus,
+    originalMappingStatus,
     onMappingStatusChange,
     afterSaveCallback,
+    notificationsList,
   } = props;
 
-  const apiUri = `${API_URL}/mapping/${id}/comments/`;
-
-  const mappingStatusControl = (
-    <MappingStatusControl
-      id={id}
-      isLoggedIn={isLoggedIn}
+  const statusChangeControl = (
+    <StatusChangeControl
       status={mappingStatus}
       onChange={onMappingStatusChange}
-      editable={true}
     />
   );
 
+  const commentsApiUri = `${API_URL}/mapping/${id}/comments/`;
+  const statusApiUri = `${API_URL}/mapping/${id}/status/`;
+
   return (
-    <CommentsSection
-      id={id}
-      isLoggedIn={isLoggedIn}
-      comments={comments}
-      mappingStatus={mappingStatus}
-      afterSaveCallback={afterSaveCallback}
-      mapped={true}
-      statusChangeControl={mappingStatusControl}
-      apiUri={apiUri}
-    />
+    <Fragment>
+      <CommentsSection
+        isLoggedIn={isLoggedIn}
+        comments={comments}
+      />
+
+      <CommentsAndStatusModal
+        id={id}
+        isLoggedIn={isLoggedIn}
+        mappingStatus={mappingStatus}
+        originalMappingStatus={originalMappingStatus}
+        afterSaveCallback={afterSaveCallback}
+        statusChangeControl={statusChangeControl}
+        notificationsList={notificationsList}
+        commentsApiUri={commentsApiUri}
+        statusApiUri={statusApiUri}
+        mapped
+      />
+    </Fragment>
   );
 };
 
@@ -50,6 +60,10 @@ MappingComments.propTypes = {
   onMappingStatusChange: PropTypes.func.isRequired,
   afterSaveCallback: PropTypes.func.isRequired,
   comments: PropTypes.arrayOf(PropTypes.shape({})),
+  notificationsList: PropTypes.objectOf(
+    PropTypes.string,
+  ).isRequired,
+  originalMappingStatus: PropTypes.string.isRequired,
 };
 
 MappingComments.defaultProps = {

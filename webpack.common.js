@@ -4,11 +4,12 @@ var path = require('path');
 module.exports = {
   context: __dirname,
   entry: {
-    app: ['babel-polyfill', __dirname + '/src/ui/index.jsx'],
-    vendor: ['react', 'react-dom', 'simplemde']
+    app: ['@babel/polyfill', __dirname + '/src/ui/index.jsx'],
+    vendor: ['@babel/preset-react', 'react-dom', 'simplemde']
   },
   resolve: {
-    extensions: [".jsx", ".js"]
+    extensions: [".jsx", ".js"],
+    alias: { react: require.resolve("react") }
   },
   module: {
     rules: [{
@@ -40,5 +41,9 @@ module.exports = {
     new webpack.DefinePlugin({
       FRONTEND_VERSION: JSON.stringify(require("./package.json").version)
     })
-  ]
+  ],
+  node: {
+    fs: 'empty'
+  },
+  target: 'web',
 };

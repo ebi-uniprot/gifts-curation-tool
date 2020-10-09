@@ -23,7 +23,7 @@ module.exports = merge(common, {
     new webpack.DefinePlugin({
       BASE_URL: JSON.stringify('/gifts'),
       API_URL: JSON.stringify('/gifts/api'),
-      AUTH_CALLBACK_URL: JSON.stringify('http://wwwdev.ebi.ac.uk/gifts/login'),
+      AUTH_CALLBACK_URL: JSON.stringify('https://wwwdev.ebi.ac.uk/gifts/login'),
       READ_ONLY: JSON.stringify(process.argv.indexOf('--READ_ONLY') > -1 || false),
     }),
     new HtmlWebPackPlugin({

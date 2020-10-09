@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import '../../styles/StatusIndicator.scss';
+import '../../../styles/StatusIcon.scss';
 
 function getClassName(status) {
   switch (status) {
@@ -24,16 +24,10 @@ function getClassName(status) {
   }
 }
 
-const StatusIndicator = (props) => {
-  const { status } = props;
-  return <div className={getClassName(status)} />;
+const StatusIcon = ({ status }) => <div className={getClassName(status)} />;
+
+StatusIcon.propTypes = {
+  status: PropTypes.string.isRequired,
 };
 
-StatusIndicator.propTypes = {
-  status: PropTypes.oneOfType([
-    PropTypes.string,
-    PropTypes.number,
-  ]).isRequired,
-};
-
-export default StatusIndicator;
+export default StatusIcon;

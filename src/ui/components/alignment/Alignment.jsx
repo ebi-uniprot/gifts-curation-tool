@@ -252,7 +252,7 @@ class Alignment extends Component {
     elementA.innerHTML = valueA !== null ? `${positionA}:${valueA}` : '-';
     elementB.innerHTML = valueB !== null ? `${positionB}:${valueB}` : '-';
 
-    tooltip.style.top = `${targetPosition.y + (window.scrollY - 20)}px`;
+    tooltip.style.top = `${targetPosition.y + (window.scrollY - 56)}px`;
     tooltip.style.left = `${targetPosition.x + (window.scrollX - 1)}px`;
     tooltip.style.height = `${targetPosition.height + 40}px`;
     tooltip.style.display = 'block';

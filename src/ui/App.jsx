@@ -49,6 +49,7 @@ class App extends Component {
     selectedFilters: {},
     frontendVersion: `${FRONTEND_VERSION}`,
     backendVersion: null,
+    statusValues: {},
   };
 
   constructor(props) {
@@ -60,10 +61,14 @@ class App extends Component {
     this.setAuthState();
 
     axios
-      .get(`${API_URL}/version/?format=json`)
-      .then(({ data }) => {
+      .all([
+        axios.get(`${API_URL}/version/?format=json`),
+        axios.get(`${API_URL}/mappings/statuses/?format=json`),
+      ])
+      .then((response) => {
         this.setState({
-          backendVersion: data.version,
+          backendVersion: response[0].data.version,
+          statusValues: response[1].data,
         });
       });
   }

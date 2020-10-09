@@ -22,11 +22,9 @@ class SearchField extends Component {
             className="input-group-field"
             ref={this.inputField}
           />
-          <div className="input-group-button">
-            <button type="submit" className="button">
-              Submit
-            </button>
-          </div>
+          <button type="submit" className="button">
+            Submit
+          </button>
         </form>
       </Fragment>
     );

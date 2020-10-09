@@ -7,6 +7,7 @@ const Layout = (props) => {
 
   return (
     <div id="content">
+      <div id="modal" />
       <Header {...props} />
       {/* <!-- Suggested layout containers --> */}
       <section id="main-content-area" role="main">

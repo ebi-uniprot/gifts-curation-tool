@@ -1,6 +1,7 @@
 .status-wrapper {
-  display: table;
+  display: flex;
   margin-left: auto;
+  align-items: center
 }
 
 .status-wrapper > .status {
