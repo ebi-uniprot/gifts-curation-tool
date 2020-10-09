@@ -187,7 +187,7 @@ class ResultsTable extends Component {
     return (
       <Fragment>
         <div className="row column medium-12">
-          <h2>{`${rowCount} ${(rowCount === '1') ? 'Mapping' : 'Mappings'}`}</h2>
+          <h2>{`${rowCount} ${(rowCount === '1') ? 'Gene Group' : 'Gene Groups'}`}</h2>
         </div>
         <div className="row">
           <div className="column medium-2">
