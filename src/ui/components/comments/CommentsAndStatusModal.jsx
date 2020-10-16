@@ -112,6 +112,10 @@ const CommentsAndStatusModal = ({
   commentsApiUri,
   statusApiUri,
 }) => {
+  if (!isLoggedIn) {
+    return null;
+  }
+
   const [selectedNotificationsLists, setSelectedNotificatoinsLists] = useState([]);
   const userToken = cookies.get('userToken');
 
