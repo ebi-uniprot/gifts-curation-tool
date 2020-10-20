@@ -81,12 +81,17 @@ const saveComment = (
 const updateStatus = (
   id,
   status,
+  notificationLists,
   userToken,
   onSuccess,
   onFailure,
   apiUri,
 ) => {
+  const notificationListsIds = notificationLists
+    .map(l => parseInt(l.value, 10));
+
   const changes = {
+    email_recipient_ids: notificationListsIds,
     status,
   };
 
@@ -184,6 +189,7 @@ const CommentsAndStatusModal = ({
           updateStatus(
             id,
             mappingStatus,
+            selectedNotificationsLists,
             userToken,
             statusUpdateSuccess,
             statusUpdateFail,
