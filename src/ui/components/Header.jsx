@@ -32,7 +32,6 @@ function Header(props) {
               <Link to={`${BASE_URL}/`} title="Back to GIFTs homepage">
                 GIFTs
               </Link>
-              <small> beta</small>
             </h1>
           </div>
           {/* <!-- /local-title --> */}

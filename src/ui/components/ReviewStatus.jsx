@@ -12,7 +12,7 @@ const ReviewStatus = (props) => {
     case 'TrEMBL':
       return <span className="icon icon-generic protein-review-status protein-review-status--unreviewd" data-icon="Q" title="TrEMBL unreviewed" />;
     case 'Ensembl':
-      return <span className="icon icon-generic protein-review-status protein-review-status--ensembl-select" data-icon="q" title="Ensembl select" />;
+      return <span className="icon icon-generic protein-review-status protein-review-status--ensembl-select" data-icon="q" title="MANE Select" />;
     default:
       // probably an isoform
       return null;

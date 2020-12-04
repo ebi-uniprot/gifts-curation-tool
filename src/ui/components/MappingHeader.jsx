@@ -38,6 +38,11 @@ const MappingHeader = (props) => {
           {mapping.ensemblRelease}
         </div>
         <div>
+          <strong>MANE Select:</strong>
+          &nbsp;
+          {mapping.ensemblTranscript.select ? 'Yes' : 'No'}
+        </div>
+        <div>
           <strong>Symbol:</strong>
           &nbsp;
           {mapping.ensemblTranscript.ensgSymbol}
