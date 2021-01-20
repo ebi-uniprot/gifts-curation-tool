@@ -30,7 +30,7 @@ function Header(props) {
           <div className="columns medium-6" id="local-title">
             <h1>
               <Link to={`${BASE_URL}/`} title="Back to GIFTs homepage">
-                GIFTs
+                GIFTS
               </Link>
             </h1>
           </div>
