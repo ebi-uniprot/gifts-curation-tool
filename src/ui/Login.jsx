@@ -1,17 +1,20 @@
-import { Component } from 'react';
-import PropTypes from 'prop-types';
-import { withCookies } from 'react-cookie';
-import * as jwt from 'jsonwebtoken';
+import { Component } from "react";
+import PropTypes from "prop-types";
+import { withCookies } from "react-cookie";
+import * as jwt from "jsonwebtoken";
 
-import { getSecondsSinceEpoch } from './util/util';
-import authConfig from '../authConfig';
-import '../styles/Home.scss';
+import { getSecondsSinceEpoch } from "./util/util";
+import authConfig from "../authConfig";
+import "../styles/Home.scss";
 
 class Login extends Component {
   componentDidMount() {
-    window.addEventListener('message', this.onElixirResponse);
+    window.addEventListener("message", this.onElixirResponse);
     this.windowRef = window
-      .open(`${authConfig.aap.url}/sso?from=${AUTH_CALLBACK_URL}&ttl=180`, 'elixir')
+      .open(
+        `${authConfig.aap.url}/sso?from=${process.env.REACT_APP_AUTH_CALLBACK_URL}&ttl=180`,
+        "elixir"
+      )
       .focus();
   }
 
@@ -23,16 +26,18 @@ class Login extends Component {
     }
 
     try {
-      const userToken = jwt.verify(
-        message.data,
-        authConfig.aap.public_key,
-        { algorithm: authConfig.aap.algorithm },
-      );
+      const userToken = jwt.verify(message.data, authConfig.aap.public_key, {
+        algorithm: authConfig.aap.algorithm,
+      });
 
       for (let i = 0; i < userToken.domains.length; i += 1) {
         const domain = userToken.domains[i];
 
-        if ([authConfig.gifts.domain.name, authConfig.gifts.domain.id].includes(domain)) {
+        if (
+          [authConfig.gifts.domain.name, authConfig.gifts.domain.id].includes(
+            domain
+          )
+        ) {
           const user = {
             id: userToken.sub,
             name: userToken.name,
@@ -41,7 +46,7 @@ class Login extends Component {
           onLoginSuccess(user);
           const maxAge = userToken.exp - getSecondsSinceEpoch();
 
-          cookies.set('userToken', message.data, { path: '/', maxAge });
+          cookies.set("userToken", message.data, { path: "/", maxAge });
           return true;
         }
       }

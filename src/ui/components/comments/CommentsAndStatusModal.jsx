@@ -1,21 +1,22 @@
-import React, { useState, useEffect } from 'react';
-import { withRouter } from 'react-router-dom';
-import PropTypes from 'prop-types';
-import axios from 'axios';
-import { withCookies } from 'react-cookie';
-import SimpleMED from 'simplemde';
+import React, { useState, useEffect } from "react";
+import { withRouter } from "react-router-dom";
+import PropTypes from "prop-types";
+import axios from "axios";
+import { withCookies } from "react-cookie";
+import SimpleMED from "simplemde";
 import {
   Window,
   WindowActionButton,
   ModalBackdrop,
   useModal,
-} from 'franklin-sites';
+} from "franklin-sites";
 
-import SendNotificationUI from '../SendNotificationUI';
-import '../../../../node_modules/simplemde/dist/simplemde.min.css';
-import '../../../styles/CommentsAndStatusModal.scss';
+import SendNotificationUI from "../SendNotificationUI";
+import "../../../../node_modules/simplemde/dist/simplemde.min.css";
+import "../../../styles/CommentsAndStatusModal.scss";
 
-const createId = (id, mapped) => `comments-${(mapped) ? 'mapped' : 'unmapped'}-${id}`;
+const createId = (id, mapped) =>
+  `comments-${mapped ? "mapped" : "unmapped"}-${id}`;
 
 const onCommentTextChange = (id, textEditor) => {
   const text = textEditor.value();
@@ -23,10 +24,8 @@ const onCommentTextChange = (id, textEditor) => {
   localStorage.setItem(createId(id), text);
 };
 
-const createTextEditor = (
-  id,
-) => {
-  const element = document.getElementById('text-editor');
+const createTextEditor = (id) => {
+  const element = document.getElementById("text-editor");
 
   if (element === null) {
     return null;
@@ -34,11 +33,11 @@ const createTextEditor = (
 
   const textEditor = new SimpleMED({
     element,
-    initialValue: localStorage.getItem(createId(id)) || '',
-    hideIcons: ['image'],
+    initialValue: localStorage.getItem(createId(id)) || "",
+    hideIcons: ["image"],
   });
 
-  textEditor.codemirror.on('change', () => onCommentTextChange(id, textEditor));
+  textEditor.codemirror.on("change", () => onCommentTextChange(id, textEditor));
 
   return textEditor;
 };
@@ -51,10 +50,11 @@ const saveComment = (
   userToken,
   onSuccess,
   onFailure,
-  apiUri,
+  apiUri
 ) => {
-  const notificationListsIds = notificationLists
-    .map(l => parseInt(l.value, 10));
+  const notificationListsIds = notificationLists.map((l) =>
+    parseInt(l.value, 10)
+  );
 
   const comment = {
     email_recipient_ids: notificationListsIds,
@@ -67,15 +67,12 @@ const saveComment = (
 
   const config = {
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
       Authorization: `Bearer ${userToken}`,
     },
   };
 
-  axios
-    .post(apiUri, comment, config)
-    .then(onSuccess)
-    .catch(onFailure);
+  axios.post(apiUri, comment, config).then(onSuccess).catch(onFailure);
 };
 
 const updateStatus = (
@@ -85,10 +82,11 @@ const updateStatus = (
   userToken,
   onSuccess,
   onFailure,
-  apiUri,
+  apiUri
 ) => {
-  const notificationListsIds = notificationLists
-    .map(l => parseInt(l.value, 10));
+  const notificationListsIds = notificationLists.map((l) =>
+    parseInt(l.value, 10)
+  );
 
   const changes = {
     email_recipient_ids: notificationListsIds,
@@ -99,10 +97,7 @@ const updateStatus = (
     headers: { Authorization: `Bearer ${userToken}` },
   };
 
-  axios
-    .put(apiUri, changes, config)
-    .then(onSuccess)
-    .catch(onFailure);
+  axios.put(apiUri, changes, config).then(onSuccess).catch(onFailure);
 };
 
 const CommentsAndStatusModal = ({
@@ -117,14 +112,9 @@ const CommentsAndStatusModal = ({
   commentsApiUri,
   statusApiUri,
 }) => {
-  if (!isLoggedIn) {
-    return null;
-  }
-
-  const [selectedNotificationsLists, setSelectedNotificatoinsLists] = useState([]);
-  const userToken = cookies.get('userToken');
-
-  let textEditor = null;
+  const [selectedNotificationsLists, setSelectedNotificatoinsLists] = useState(
+    []
+  );
 
   useEffect(() => {
     if (textEditor === null) {
@@ -132,16 +122,24 @@ const CommentsAndStatusModal = ({
     }
 
     if (textEditor) {
-      textEditor.render(document.getElementById('text-editor'));
+      textEditor.render(document.getElementById("text-editor"));
 
-      textEditor.value(
-        localStorage.getItem(
-          createId(id),
-        )
-      || '',
-      );
+      textEditor.value(localStorage.getItem(createId(id)) || "");
     }
   });
+
+  const { displayModal, setDisplayModal, Modal } = useModal(
+    ModalBackdrop,
+    DialogWindow
+  );
+
+  if (!isLoggedIn) {
+    return null;
+  }
+
+  const userToken = cookies.get("userToken");
+
+  let textEditor = null;
 
   const modalWindowButtons = [
     <WindowActionButton
@@ -158,14 +156,14 @@ const CommentsAndStatusModal = ({
       key="window-action-send"
       onClick={() => {
         const addCommentSuccess = () => {
-          console.log('comment was added successfully.');
-          textEditor.value('');
+          console.log("comment was added successfully.");
+          textEditor.value("");
           setSelectedNotificatoinsLists([]);
           afterSaveCallback(id, isLoggedIn);
           localStorage.removeItem(createId(id));
         };
         const addCommentFail = (e) => {
-          console.log('add comment was failed with an error:', e);
+          console.log("add comment was failed with an error:", e);
         };
 
         saveComment(
@@ -175,15 +173,15 @@ const CommentsAndStatusModal = ({
           userToken,
           addCommentSuccess,
           addCommentFail,
-          commentsApiUri,
+          commentsApiUri
         );
 
         if (originalMappingStatus !== mappingStatus) {
           const statusUpdateSuccess = () => {
-            console.log('status was updated successfully.');
+            console.log("status was updated successfully.");
           };
           const statusUpdateFail = (e) => {
-            console.log('status update was failed with an error:', e);
+            console.log("status update was failed with an error:", e);
           };
 
           updateStatus(
@@ -193,7 +191,7 @@ const CommentsAndStatusModal = ({
             userToken,
             statusUpdateSuccess,
             statusUpdateFail,
-            statusApiUri,
+            statusApiUri
           );
         }
 
@@ -205,10 +203,7 @@ const CommentsAndStatusModal = ({
     />,
   ];
 
-  const DialogWindow = ({
-    className,
-    handleExitModal,
-  }) => (
+  const DialogWindow = ({ className, handleExitModal }) => (
     <Window
       width="50vw"
       height="40vh"
@@ -230,16 +225,14 @@ const CommentsAndStatusModal = ({
           <SendNotificationUI
             options={notificationsList}
             selectedOption={selectedNotificationsLists}
-            onChange={values => setSelectedNotificatoinsLists(values)}
+            onChange={(values) => setSelectedNotificatoinsLists(values)}
           />
         </div>
       </div>
 
       <div className="row small-12">
         <div className="small-4 column">Status:</div>
-        <div className="small-8 column">
-          {statusChangeControl}
-        </div>
+        <div className="small-8 column">{statusChangeControl}</div>
       </div>
 
       <div className="row small-12">
@@ -260,21 +253,21 @@ const CommentsAndStatusModal = ({
     className: null,
   };
 
-  const {
-    displayModal,
-    setDisplayModal,
-    Modal,
-  } = useModal(ModalBackdrop, DialogWindow);
-
   return (
     <div className="comments-section">
       <div className="row">
         <div className="column medium-12">
-          <button type="button" className="button" onClick={() => setDisplayModal(true)}>
+          <button
+            type="button"
+            className="button"
+            onClick={() => setDisplayModal(true)}
+          >
             Comment / Change Status
           </button>
 
-          {displayModal && <Modal handleExitModal={() => setDisplayModal(false)} />}
+          {displayModal && (
+            <Modal handleExitModal={() => setDisplayModal(false)} />
+          )}
         </div>
       </div>
     </div>
@@ -287,9 +280,7 @@ CommentsAndStatusModal.propTypes = {
   statusChangeControl: PropTypes.node.isRequired,
   cookies: PropTypes.shape({}).isRequired,
   afterSaveCallback: PropTypes.func.isRequired,
-  notificationsList: PropTypes.objectOf(
-    PropTypes.string,
-  ).isRequired,
+  notificationsList: PropTypes.objectOf(PropTypes.string).isRequired,
   mappingStatus: PropTypes.string.isRequired,
   originalMappingStatus: PropTypes.string.isRequired,
   commentsApiUri: PropTypes.string.isRequired,

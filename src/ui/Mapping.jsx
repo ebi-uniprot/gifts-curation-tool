@@ -1,20 +1,20 @@
-import React, { Component, Fragment } from 'react';
-import { withRouter } from 'react-router-dom';
-import PropTypes from 'prop-types';
-import axios from 'axios';
-import { withCookies } from 'react-cookie';
+import React, { Component, Fragment } from "react";
+import { withRouter } from "react-router-dom";
+import PropTypes from "prop-types";
+import axios from "axios";
+import { withCookies } from "react-cookie";
 
-import LoadingSpinner from './components/LoadingSpinner';
-import Alignment from './components/alignment/Alignment';
-import LabelsSection from './components/label/LabelsSection';
-import RelatedMappingsSection from './components/RelatedMappingsSection';
-import MappingHeader from './components/MappingHeader';
-import StatusIcon from './components/status/StatusIcon';
-import StatusText from './components/status/StatusText';
-import MappingComments from './components/comments/MappingComments';
-import { statusesList } from './util/util';
+import LoadingSpinner from "./components/LoadingSpinner";
+import Alignment from "./components/alignment/Alignment";
+import LabelsSection from "./components/label/LabelsSection";
+import RelatedMappingsSection from "./components/RelatedMappingsSection";
+import MappingHeader from "./components/MappingHeader";
+import StatusIcon from "./components/status/StatusIcon";
+import StatusText from "./components/status/StatusText";
+import MappingComments from "./components/comments/MappingComments";
+import { statusesList } from "./util/util";
 
-import '../styles/Mapping.scss';
+import "../styles/Mapping.scss";
 
 class Mapping extends Component {
   defaultState = {
@@ -72,36 +72,50 @@ class Mapping extends Component {
     const tokenIsNotExpired = hasValidAuthenticationToken();
     const config = {};
     const apiCalls = [
-      axios.get(`${API_URL}/mapping/${mappingId}/?format=json`, config),
-      axios.get(`${API_URL}/mapping/${mappingId}/labels/?format=json`, config),
+      axios.get(
+        `${process.env.REACT_APP_API_URL}/mapping/${mappingId}/?format=json`,
+        config
+      ),
+      axios.get(
+        `${process.env.REACT_APP_API_URL}/mapping/${mappingId}/labels/?format=json`,
+        config
+      ),
     ];
 
     if (isLoggedIn && tokenIsNotExpired) {
       config.headers = {
-        Authorization: `Bearer ${cookies.get('userToken')}`,
+        Authorization: `Bearer ${cookies.get("userToken")}`,
       };
 
-      apiCalls.push(axios.get(`${API_URL}/mapping/${mappingId}/comments/?format=json`, config));
+      apiCalls.push(
+        axios.get(
+          `${process.env.REACT_APP_API_URL}/mapping/${mappingId}/comments/?format=json`,
+          config
+        )
+      );
     }
 
     axios
       .all(apiCalls)
-      .then(axios.spread((mappingResponse, labelsResponse, commentsResponse) => {
-        const details = mappingResponse.data;
-        const comments = (commentsResponse && commentsResponse.data.comments) || [];
-        const { labels } = labelsResponse.data;
-        const { status } = details.mapping;
+      .then(
+        axios.spread((mappingResponse, labelsResponse, commentsResponse) => {
+          const details = mappingResponse.data;
+          const comments =
+            (commentsResponse && commentsResponse.data.comments) || [];
+          const { labels } = labelsResponse.data;
+          const { status } = details.mapping;
 
-        this.setState({
-          details,
-          status,
-          labels,
-          comments: comments.reverse(),
-          originalStatus: status,
-        });
-      }))
+          this.setState({
+            details,
+            status,
+            labels,
+            comments: comments.reverse(),
+            originalStatus: status,
+          });
+        })
+      )
       .catch(() => {
-        history.push(`${BASE_URL}/error`);
+        history.push(`${process.env.REACT_APP_BASE_URL}/error`);
       });
   };
 
@@ -119,18 +133,10 @@ class Mapping extends Component {
       return <LoadingSpinner />;
     }
 
-    const {
-      details,
-      status,
-      originalStatus,
-      comments,
-      labels,
-      showAlignment,
-    } = this.state;
+    const { details, status, originalStatus, comments, labels, showAlignment } =
+      this.state;
 
-    const {
-      isLoggedIn,
-    } = this.props;
+    const { isLoggedIn } = this.props;
 
     const { mapping, relatedEntries, taxonomy } = details;
     const { mappingId } = mapping;
@@ -159,15 +165,15 @@ class Mapping extends Component {
             className="button"
             onClick={() => this.toggleDisplayAlignment()}
           >
-            {(showAlignment) ? 'Hide ' : 'Show '}
+            {showAlignment ? "Hide " : "Show "}
             Alignment
           </button>
-          {(showAlignment)
+          {showAlignment ? (
             // This 'mappingId' is set at a different time
             // from 'mapping.mappingId'
             // eslint-disable-next-line react/destructuring-assignment
-            ? <Alignment mappingId={this.state.mappingId} />
-            : null }
+            <Alignment mappingId={this.state.mappingId} />
+          ) : null}
         </div>
 
         <div className="row column medium-12">
@@ -177,7 +183,6 @@ class Mapping extends Component {
 
         <div className="row mapping__comments__wrapper">
           <div className="column medium-12">
-
             <MappingComments
               id={mappingId}
               isLoggedIn={isLoggedIn}

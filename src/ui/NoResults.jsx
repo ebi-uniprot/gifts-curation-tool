@@ -1,7 +1,7 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React from "react";
+import PropTypes from "prop-types";
 
-const NoResults = props => (
+const NoResults = (props) => (
   <div className="row column medium-8 medium-offset-2">
     <div className="callout text-center">
       <h2>No results!</h2>
@@ -9,7 +9,11 @@ const NoResults = props => (
         🥛
       </span>
       <p className="lead">You could try a different search term or</p>
-      <a href={`${BASE_URL}/mappings`} onClick={e => props.goToMappingsPage(e)} className="button">
+      <a
+        href={`${process.env.REACT_APP_BASE_URL}/mappings`}
+        onClick={(e) => props.goToMappingsPage(e)}
+        className="button"
+      >
         Explore mappings
       </a>
     </div>

@@ -1,13 +1,13 @@
-import React, { Component } from 'react';
-import { withRouter } from 'react-router-dom';
-import PropTypes from 'prop-types';
-import axios from 'axios';
-import isEqual from 'lodash/isEqual';
+import React, { Component } from "react";
+import { withRouter } from "react-router-dom";
+import PropTypes from "prop-types";
+import axios from "axios";
+import isEqual from "lodash/isEqual";
 
-import LoadingSpinner from './components/LoadingSpinner';
-import ResultsTable from './components/ResultsTable';
+import LoadingSpinner from "./components/LoadingSpinner";
+import ResultsTable from "./components/ResultsTable";
 
-import '../styles/Home.scss';
+import "../styles/Home.scss";
 
 let isLoading = true;
 
@@ -15,7 +15,7 @@ class Mappings extends Component {
   state = {
     results: null,
     facets: {},
-  }
+  };
 
   componentDidMount() {
     this.loadResults();
@@ -23,16 +23,13 @@ class Mappings extends Component {
 
   componentDidUpdate(prevProps) {
     const { results } = this.state;
-    const {
-      activeFacets,
-      searchTerm,
-    } = this.props;
+    const { activeFacets, searchTerm } = this.props;
 
     if (
-      isLoading
-      || results === null
-      || !isEqual(prevProps.activeFacets, activeFacets)
-      || prevProps.searchTerm !== searchTerm
+      isLoading ||
+      results === null ||
+      !isEqual(prevProps.activeFacets, activeFacets) ||
+      prevProps.searchTerm !== searchTerm
     ) {
       this.loadResults();
     }
@@ -41,17 +38,12 @@ class Mappings extends Component {
   getFacetsAsString = () => {
     const { activeFacets } = this.props;
     return Object.keys(activeFacets || {})
-      .map(key => `${key}:${activeFacets[key]}`)
-      .join(';');
-  }
+      .map((key) => `${key}:${activeFacets[key]}`)
+      .join(";");
+  };
 
   handlePageClick = (data) => {
-    const {
-      initialPage,
-      limit,
-      offset,
-      changePageParams,
-    } = this.props;
+    const { initialPage, limit, offset, changePageParams } = this.props;
     const newInitialPage = data.selected;
     const newOffset = Math.ceil(initialPage * limit);
 
@@ -71,19 +63,13 @@ class Mappings extends Component {
 
   loadResults = () => {
     isLoading = true;
-    const {
-      searchTerm,
-      history,
-      clearSearchTerm,
-      offset,
-      limit,
-    } = this.props;
-    const apiURI = `${API_URL}/mappings`;
+    const { searchTerm, history, clearSearchTerm, offset, limit } = this.props;
+    const apiURI = `${process.env.REACT_APP_API_URL}/mappings`;
     const params = {
       searchTerm,
       offset,
       limit,
-      format: 'json',
+      format: "json",
       facets: this.getFacetsAsString(),
     };
 
@@ -92,7 +78,7 @@ class Mappings extends Component {
       .then(({ data, status }) => {
         if (status === 204) {
           clearSearchTerm(() => {
-            history.push(`${BASE_URL}/no-results`);
+            history.push(`${process.env.REACT_APP_BASE_URL}/no-results`);
           });
 
           return;
@@ -103,24 +89,27 @@ class Mappings extends Component {
 
         const groupedResults = this.groupByIsoform(data.results);
 
-        this.setState({
-          // params: this.props.params,
-          facets: data.facets,
-          results: groupedResults,
-          totalCount: data.count,
-          // displayIsoforms: onlyIsoforms,
-        }, () => {
-          isLoading = false;
-        });
+        this.setState(
+          {
+            // params: this.props.params,
+            facets: data.facets,
+            results: groupedResults,
+            totalCount: data.count,
+            // displayIsoforms: onlyIsoforms,
+          },
+          () => {
+            isLoading = false;
+          }
+        );
       })
       .catch((e) => {
         console.log(e);
-        history.push(`${BASE_URL}/error`);
+        history.push(`${process.env.REACT_APP_BASE_URL}/error`);
       });
   };
 
-  groupByIsoform = results => results
-    .map((group, index) => ({
+  groupByIsoform = (results) =>
+    results.map((group, index) => ({
       taxonomy: group.taxonomy,
       rows: group.entryMappings,
       wrapper: {
@@ -128,24 +117,18 @@ class Mappings extends Component {
         ensgId: group.entryMappings[0].ensemblTranscript.ensgId,
         gene_symbol: group.entryMappings[0].uniprotEntry.gene_symbol,
         counts: {
-          canonical: group.entryMappings
-            .filter(mapping => mapping.uniprotEntry.isCanonical === true)
-            .length,
-          isoform: group.entryMappings
-            .filter(mapping => mapping.uniprotEntry.isCanonical === false)
-            .length,
+          canonical: group.entryMappings.filter(
+            (mapping) => mapping.uniprotEntry.isCanonical === true
+          ).length,
+          isoform: group.entryMappings.filter(
+            (mapping) => mapping.uniprotEntry.isCanonical === false
+          ).length,
         },
       },
     }));
 
   render() {
-    const {
-      offset,
-      limit,
-      facets,
-      results,
-      totalCount,
-    } = this.state;
+    const { offset, limit, facets, results, totalCount } = this.state;
 
     const {
       activeFacets,
@@ -162,7 +145,7 @@ class Mappings extends Component {
       params: {
         offset,
         limit,
-        format: 'json',
+        format: "json",
       },
       facets,
       results,
@@ -177,9 +160,11 @@ class Mappings extends Component {
       rowCount: totalCount,
     };
 
-    return (isLoading || results === null)
-      ? <LoadingSpinner />
-      : <ResultsTable {...propsToPass} />;
+    return isLoading || results === null ? (
+      <LoadingSpinner />
+    ) : (
+      <ResultsTable {...propsToPass} />
+    );
   }
 }
 
@@ -199,7 +184,7 @@ Mappings.propTypes = {
 };
 
 Mappings.defaultProps = {
-  searchTerm: '',
+  searchTerm: "",
   defaultOrganism: null,
   clearSearchTerm: null,
   initialPage: 0,

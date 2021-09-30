@@ -1,18 +1,18 @@
-import React, { Component, Fragment } from 'react';
-import { withRouter } from 'react-router-dom';
-import PropTypes from 'prop-types';
-import axios from 'axios';
-import { withCookies } from 'react-cookie';
+import React, { Component, Fragment } from "react";
+import { withRouter } from "react-router-dom";
+import PropTypes from "prop-types";
+import axios from "axios";
+import { withCookies } from "react-cookie";
 
-import LoadingSpinner from './components/LoadingSpinner';
-import UnmappedHeader from './components/UnmappedHeader';
-import UnmappedComments from './components/comments/UnmappedComments';
-import StatusIcon from './components/status/StatusIcon';
-import StatusText from './components/status/StatusText';
-import { statusesList } from './util/util';
+import LoadingSpinner from "./components/LoadingSpinner";
+import UnmappedHeader from "./components/UnmappedHeader";
+import UnmappedComments from "./components/comments/UnmappedComments";
+import StatusIcon from "./components/status/StatusIcon";
+import StatusText from "./components/status/StatusText";
+import { statusesList } from "./util/util";
 
-import '../styles/Unmapped.scss';
-import '../../node_modules/simplemde/dist/simplemde.min.css';
+import "../styles/Unmapped.scss";
+import "../../node_modules/simplemde/dist/simplemde.min.css";
 
 class Unmapped extends Component {
   defaultState = {
@@ -68,36 +68,50 @@ class Unmapped extends Component {
     const tokenIsNotExpired = hasValidAuthenticationToken();
     const config = {};
     const apiCalls = [
-      axios.get(`${API_URL}/unmapped/${id}/?format=json`, config),
-      axios.get(`${API_URL}/unmapped/${id}/labels/?format=json`, config),
+      axios.get(
+        `${process.env.REACT_APP_API_URL}/unmapped/${id}/?format=json`,
+        config
+      ),
+      axios.get(
+        `${process.env.REACT_APP_API_URL}/unmapped/${id}/labels/?format=json`,
+        config
+      ),
     ];
 
     if (isLoggedIn && tokenIsNotExpired) {
       config.headers = {
-        Authorization: `Bearer ${cookies.get('userToken')}`,
+        Authorization: `Bearer ${cookies.get("userToken")}`,
       };
 
-      apiCalls.push(axios.get(`${API_URL}/unmapped/${id}/comments/?format=json`, config));
+      apiCalls.push(
+        axios.get(
+          `${process.env.REACT_APP_API_URL}/unmapped/${id}/comments/?format=json`,
+          config
+        )
+      );
     }
 
     axios
       .all(apiCalls)
-      .then(axios.spread((unmappedResponse, labelsResponse, commentsResponse) => {
-        const details = unmappedResponse.data;
-        const comments = (commentsResponse && commentsResponse.data.comments) || [];
-        const { status } = details.entry;
+      .then(
+        axios.spread((unmappedResponse, labelsResponse, commentsResponse) => {
+          const details = unmappedResponse.data;
+          const comments =
+            (commentsResponse && commentsResponse.data.comments) || [];
+          const { status } = details.entry;
 
-        this.setState({
-          details,
-          status,
-          comments: comments.reverse(),
-          originalStatus: status,
-        });
-      }))
+          this.setState({
+            details,
+            status,
+            comments: comments.reverse(),
+            originalStatus: status,
+          });
+        })
+      )
       .catch(() => {
-        history.push(`${BASE_URL}/error`);
+        history.push(`${process.env.REACT_APP_BASE_URL}/error`);
       });
-  }
+  };
 
   render() {
     // eslint-disable-next-line react/destructuring-assignment
@@ -105,16 +119,9 @@ class Unmapped extends Component {
       return <LoadingSpinner />;
     }
 
-    const {
-      details,
-      status,
-      originalStatus,
-      comments,
-    } = this.state;
+    const { details, status, originalStatus, comments } = this.state;
 
-    const {
-      isLoggedIn,
-    } = this.props;
+    const { isLoggedIn } = this.props;
 
     const { entry } = details;
     const { id } = entry;

@@ -1,11 +1,11 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import PropTypes from 'prop-types';
+import React from "react";
+import { Link } from "react-router-dom";
+import PropTypes from "prop-types";
 
-import ReviewStatus from './ReviewStatus';
-import StatusIcon from './status/StatusIcon';
-import AlignmentIndicator from './alignment/AlignmentIndicator';
-import Position from './Position';
+import ReviewStatus from "./ReviewStatus";
+import StatusIcon from "./status/StatusIcon";
+import AlignmentIndicator from "./alignment/AlignmentIndicator";
+import Position from "./Position";
 
 const RelatedMapping = (props) => {
   const { item } = props;
@@ -51,7 +51,9 @@ const RelatedMapping = (props) => {
         <AlignmentIndicator difference={item.alignment_difference} />
       </td>
       <td>
-        <Link to={`${BASE_URL}/mapping/${item.mappingId}`}>
+        <Link
+          to={`${process.env.REACT_APP_BASE_URL}/mapping/${item.mappingId}`}
+        >
           <span>View</span>
         </Link>
       </td>
@@ -89,7 +91,9 @@ const UnmappedEnsembl = (props) => {
       <td>{ensgId}</td>
       <td>{ensgName}</td>
       <td>{source}</td>
-      <td><Position transcript={{ chromosome, seqRegionStart, seqRegionEnd }} /></td>
+      <td>
+        <Position transcript={{ chromosome, seqRegionStart, seqRegionEnd }} />
+      </td>
       <td />
       <td />
     </tr>
@@ -164,21 +168,25 @@ const RelatedMappingsSection = (props) => {
         </tr>
       </thead>
       <tbody>
-        {mappings.mapped.map(item => (
-          (item)
-            ? <RelatedMapping item={item} key={item.mappingId} />
-            : null
-        ))}
-        {mappings.unmapped.ensembl.map(item => (
-          (item)
-            ? <UnmappedEnsembl item={item} key={`${item.enstId}-${item.ensgId}`} />
-            : null
-        ))}
-        {mappings.unmapped.uniprot.map(item => (
-          (item)
-            ? <UnmappedUniProt item={item} key={`${item.gene_symbol}-${item.uniprotAccession}`} />
-            : null
-        ))}
+        {mappings.mapped.map((item) =>
+          item ? <RelatedMapping item={item} key={item.mappingId} /> : null
+        )}
+        {mappings.unmapped.ensembl.map((item) =>
+          item ? (
+            <UnmappedEnsembl
+              item={item}
+              key={`${item.enstId}-${item.ensgId}`}
+            />
+          ) : null
+        )}
+        {mappings.unmapped.uniprot.map((item) =>
+          item ? (
+            <UnmappedUniProt
+              item={item}
+              key={`${item.gene_symbol}-${item.uniprotAccession}`}
+            />
+          ) : null
+        )}
       </tbody>
     </table>
   );

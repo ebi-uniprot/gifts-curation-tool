@@ -1,16 +1,16 @@
-import React, { Component, Fragment } from 'react';
-import { withRouter } from 'react-router-dom';
-import PropTypes from 'prop-types';
-import axios from 'axios';
+import React, { Component, Fragment } from "react";
+import { withRouter } from "react-router-dom";
+import PropTypes from "prop-types";
+import axios from "axios";
 
-import UniProtStats from './UniProtStats';
-import EnsemblStats from './EnsemblStats';
-import LoadingSpinner from '../LoadingSpinner';
+import UniProtStats from "./UniProtStats";
+import EnsemblStats from "./EnsemblStats";
+import LoadingSpinner from "../LoadingSpinner";
 
-import '../../../styles/Statistics.scss';
+import "../../../styles/Statistics.scss";
 
-const mouseTaxid = '10090';
-const humanTaxid = '9606';
+const mouseTaxid = "10090";
+const humanTaxid = "9606";
 
 class Statistics extends Component {
   state = {
@@ -24,10 +24,26 @@ class Statistics extends Component {
   getStats = () => {
     const { history } = this.props;
     const promises = [];
-    promises.push(axios.get(`${API_URL}/mappings/stats/${humanTaxid}/?format=json`));
-    promises.push(axios.get(`${API_URL}/mappings/stats/${mouseTaxid}/?format=json`));
-    promises.push(axios.get(`${API_URL}/mappings/release/${humanTaxid}/?format=json`));
-    promises.push(axios.get(`${API_URL}/mappings/release/${mouseTaxid}/?format=json`));
+    promises.push(
+      axios.get(
+        `${process.env.REACT_APP_API_URL}/mappings/stats/${humanTaxid}/?format=json`
+      )
+    );
+    promises.push(
+      axios.get(
+        `${process.env.REACT_APP_API_URL}/mappings/stats/${mouseTaxid}/?format=json`
+      )
+    );
+    promises.push(
+      axios.get(
+        `${process.env.REACT_APP_API_URL}/mappings/release/${humanTaxid}/?format=json`
+      )
+    );
+    promises.push(
+      axios.get(
+        `${process.env.REACT_APP_API_URL}/mappings/release/${mouseTaxid}/?format=json`
+      )
+    );
     axios
       .all(promises)
       .then((response) => {
@@ -42,7 +58,7 @@ class Statistics extends Component {
       })
       .catch((e) => {
         console.log(e);
-        history.push(`${BASE_URL}/error`);
+        history.push(`${process.env.REACT_APP_BASE_URL}/error`);
       });
   };
 
@@ -59,9 +75,10 @@ class Statistics extends Component {
           <div className="column medium-2">
             <h2>About</h2>
             <p>
-              This project aims to provide a common framework for Ensembl and UniProt data. This
-              infrastructure will enable both teams to read and comment on data, track entities
-              between resources and support mappings between entities.
+              This project aims to provide a common framework for Ensembl and
+              UniProt data. This infrastructure will enable both teams to read
+              and comment on data, track entities between resources and support
+              mappings between entities.
             </p>
             <p>
               <a
