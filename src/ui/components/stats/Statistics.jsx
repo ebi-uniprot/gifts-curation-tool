@@ -11,6 +11,10 @@ import "../../../styles/Statistics.scss";
 
 const mouseTaxid = "10090";
 const humanTaxid = "9606";
+const zeaMaysTaxid = "4577";
+const ratusNorvegicusTaxid = "10116";
+const glycineMaxTaxid = "3847";
+const zebrafishTaxid = "7955";
 
 class Statistics extends Component {
   state = {

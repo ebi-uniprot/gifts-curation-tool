@@ -47,7 +47,6 @@ class Alignment extends Component {
   }
 
   getAlignments = (mappingId) => {
-    const { history } = this.props;
     const apiURI = `${process.env.REACT_APP_API_URL}/mapping/${mappingId}/pairwise/?format=json`;
 
     this.setState({
