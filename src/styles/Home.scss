@@ -1,18 +1,22 @@
 .home-banner {
-    padding-top: 5vh;
-    margin-top: -3rem;
-    background-color: #192B38;
-    color: #ffffff;
-    min-height: 18em;
-    margin-bottom: 4em;
+  padding-top: 5vh;
+  margin-top: -3rem;
+  background-color: #192b38;
+  color: #ffffff;
+  min-height: 18em;
+  margin-bottom: 4em;
 }
 
 .home-banner__actions {
-    margin-top: 5vh;
+  display: flex;
+  gap: 1rem;
+  button {
+    font-size: 1.2rem;
+  }
 }
 
 .home-banner h2,
 .home-banner h3,
 .home-banner h5 {
-    color: #ffffff;
+  color: #ffffff;
 }

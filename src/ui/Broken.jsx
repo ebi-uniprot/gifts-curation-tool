@@ -1,5 +1,5 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React from "react";
+import { Link } from "react-router-dom";
 
 const Broken = () => (
   <div className="row column medium-8 medium-offset-2">
@@ -9,10 +9,10 @@ const Broken = () => (
         💔
       </span>
       <p>
-        We are probably already working hard on solving this issue, but just in case you could
-        always submit a bug using Feedback form....
+        We are probably already working hard on solving this issue, but just in
+        case you could always submit a bug using Feedback form....
       </p>
-      <Link to={`${BASE_URL}/`} className="button">
+      <Link to={`${process.env.REACT_APP_BASE_URL}/`} className="button">
         Go back
       </Link>
     </div>

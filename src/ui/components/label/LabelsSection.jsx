@@ -1,10 +1,10 @@
-import React, { Component, Fragment } from 'react';
-import { withRouter } from 'react-router-dom';
-import PropTypes from 'prop-types';
-import axios from 'axios';
-import { withCookies } from 'react-cookie';
+import React, { Component, Fragment } from "react";
+import { withRouter } from "react-router-dom";
+import PropTypes from "prop-types";
+import axios from "axios";
+import { withCookies } from "react-cookie";
 
-import Label from './Label';
+import Label from "./Label";
 
 class LabelsSection extends Component {
   constructor(props) {
@@ -33,7 +33,7 @@ class LabelsSection extends Component {
 
   processLabels = (labels) => {
     this.setState({
-      labels: labels.filter(label => label.status).reverse(),
+      labels: labels.filter((label) => label.status).reverse(),
       // labelsAvailable: labels.filter(label => !label.status),
     });
   };
@@ -57,17 +57,16 @@ class LabelsSection extends Component {
   };
 
   addLabel = () => {
-    const {
-      mappingId, isLoggedIn, history, cookies, afterChangeCallback,
-    } = this.props;
+    const { mappingId, isLoggedIn, history, cookies, afterChangeCallback } =
+      this.props;
 
     const labelId = this.labelsListRef.current.value;
-    const apiURI = `${API_URL}/mapping/${mappingId}/labels/${labelId}/`;
+    const apiURI = `${process.env.REACT_APP_API_URL}/mapping/${mappingId}/labels/${labelId}/`;
 
     const config = {
       headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${cookies.get('userToken')}`,
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${cookies.get("userToken")}`,
       },
     };
 
@@ -82,21 +81,20 @@ class LabelsSection extends Component {
       })
       .catch((e) => {
         console.log(e);
-        history.push(`${BASE_URL}/error`);
+        history.push(`${process.env.REACT_APP_BASE_URL}/error`);
       });
   };
 
   deleteLabel = (labelId) => {
-    const {
-      mappingId, isLoggedIn, history, cookies, afterChangeCallback,
-    } = this.props;
+    const { mappingId, isLoggedIn, history, cookies, afterChangeCallback } =
+      this.props;
 
-    const apiURI = `${API_URL}/mapping/${mappingId}/labels/${labelId}/`;
+    const apiURI = `${process.env.REACT_APP_API_URL}/mapping/${mappingId}/labels/${labelId}/`;
 
     const config = {
       headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${cookies.get('userToken')}`,
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${cookies.get("userToken")}`,
       },
     };
 
@@ -107,7 +105,7 @@ class LabelsSection extends Component {
       })
       .catch((e) => {
         console.log(e);
-        history.push(`${BASE_URL}/error`);
+        history.push(`${process.env.REACT_APP_BASE_URL}/error`);
       });
   };
 
@@ -145,7 +143,7 @@ class LabelsSection extends Component {
 
     return (
       <Fragment>
-        {labels.map(label => (
+        {labels.map((label) => (
           <Label
             text={label.label}
             key={label.text}
@@ -154,8 +152,8 @@ class LabelsSection extends Component {
             onDelete={this.deleteLabel}
           />
         ))}
-        { /* temporarily removing the labels control */ }
-        { /* isLoggedIn && (
+        {/* temporarily removing the labels control */}
+        {/* isLoggedIn && (
           addLabelMode ? (
             <AddLabelControl />
           ) : (
@@ -163,7 +161,7 @@ class LabelsSection extends Component {
               Add label
             </button>
           )
-        ) */ }
+        ) */}
       </Fragment>
     );
   }
@@ -176,7 +174,6 @@ LabelsSection.propTypes = {
   history: PropTypes.shape({}).isRequired,
   cookies: PropTypes.shape({}).isRequired,
   afterChangeCallback: PropTypes.func.isRequired,
-
 };
 
 LabelsSection.defaultProps = {

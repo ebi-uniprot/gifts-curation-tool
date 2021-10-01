@@ -2,52 +2,68 @@
   Colour palette: GIFTs
 */
 :root {
-  --main-color: #192B38;
-  --secondary-color:#22424B;
-  --tertiary-color: #2E5458;
-  --quart: #4E7367;
-  --quint: #7FA68C;  
+  --main-color: #192b38;
+  --secondary-color: #22424b;
+  --tertiary-color: #2e5458;
+  --quart: #4e7367;
+  --quint: #7fa68c;
 }
 
 a {
-    color: #222;
-  }
-  
-  dl dt a,
-  a.label,
-  .label,
-  a:hover,
-  a:focus,
-  a:active {
-    color: #2E5458;
-  }
-  
-  h1 { color: #f7f7f7; }
-  /* h2 { color: rgb(0,124,130); }
+  color: #222;
+}
+
+dl dt a,
+a.label,
+.label,
+a:hover,
+a:focus,
+a:active {
+  color: #2e5458;
+}
+
+h1 {
+  color: #f7f7f7;
+}
+/* h2 { color: rgb(0,124,130); }
   h3 { color: #444444; } */
-  
-  a.special { background-color: #7cd17c; }
-  
-  .menu .active > a,
-  .tag,
-  .tabs-title > a:hover,
-  .button,
-  .button.primary {
-    background-color: #2E5458;
-  }
-  a.tag:hover { color: #fff; }
-  
-  .tabs-title > a:hover,
-  .button.primary:hover,
-  .button.primary:focus { background: rgba(0,124,130,.9); }
-  .tabs-title > a:focus,
-  .tabs-title > a[aria-selected='true'] {
-    color: #fff;
-    background: #666; }
-  
-  .masthead { background-color: #22424B; }
-  
-  /* end */
+
+a.special {
+  background-color: #7cd17c;
+}
+
+.menu .active > a,
+.tag,
+.tabs-title > a:hover,
+.button,
+.button.primary {
+  background-color: #2e5458;
+}
+a.tag:hover {
+  color: #fff;
+}
+
+.button.secondary {
+  background-color: #fff;
+  color: #2e5458;
+}
+
+.tabs-title > a:hover,
+.button.primary:hover,
+.button.primary:focus {
+  background: rgba(0, 124, 130, 0.9);
+}
+.tabs-title > a:focus,
+.tabs-title > a[aria-selected="true"] {
+  color: #fff;
+  background: #666;
+}
+
+.masthead {
+  background-color: #22424b;
+}
+
+/* end */
 
 .label {
   padding: 0.33333rem 0.5rem;

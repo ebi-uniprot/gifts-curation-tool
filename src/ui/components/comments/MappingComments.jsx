@@ -1,9 +1,9 @@
-import React, { Fragment } from 'react';
-import PropTypes from 'prop-types';
+import React, { Fragment } from "react";
+import PropTypes from "prop-types";
 
-import CommentsSection from './CommentsSection';
-import StatusChangeControl from '../status/StatusChangeControl';
-import CommentsAndStatusModal from './CommentsAndStatusModal';
+import CommentsSection from "./CommentsSection";
+import StatusChangeControl from "../status/StatusChangeControl";
+import CommentsAndStatusModal from "./CommentsAndStatusModal";
 
 const MappingComments = (props) => {
   const {
@@ -24,15 +24,12 @@ const MappingComments = (props) => {
     />
   );
 
-  const commentsApiUri = `${API_URL}/mapping/${id}/comments/`;
-  const statusApiUri = `${API_URL}/mapping/${id}/status/`;
+  const commentsApiUri = `${process.env.REACT_APP_API_URL}/mapping/${id}/comments/`;
+  const statusApiUri = `${process.env.REACT_APP_API_URL}/mapping/${id}/status/`;
 
   return (
     <Fragment>
-      <CommentsSection
-        isLoggedIn={isLoggedIn}
-        comments={comments}
-      />
+      <CommentsSection isLoggedIn={isLoggedIn} comments={comments} />
 
       <CommentsAndStatusModal
         id={id}
@@ -53,16 +50,12 @@ const MappingComments = (props) => {
 MappingComments.propTypes = {
   id: PropTypes.number.isRequired,
   isLoggedIn: PropTypes.bool.isRequired,
-  mappingStatus: PropTypes.oneOfType([
-    PropTypes.string,
-    PropTypes.number,
-  ]).isRequired,
+  mappingStatus: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+    .isRequired,
   onMappingStatusChange: PropTypes.func.isRequired,
   afterSaveCallback: PropTypes.func.isRequired,
   comments: PropTypes.arrayOf(PropTypes.shape({})),
-  notificationsList: PropTypes.objectOf(
-    PropTypes.string,
-  ).isRequired,
+  notificationsList: PropTypes.objectOf(PropTypes.string).isRequired,
   originalMappingStatus: PropTypes.string.isRequired,
 };
 
