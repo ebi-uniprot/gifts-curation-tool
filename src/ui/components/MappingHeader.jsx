@@ -9,7 +9,7 @@ import Position from "./Position";
 import "../../styles/MappingHeader.scss";
 
 const MappingHeader = (props) => {
-  const { mapping } = props;
+  const { mapping, taxonomy } = props;
 
   const proteinExistenceValues = {
     1: "Evidence at protein level",
@@ -19,24 +19,24 @@ const MappingHeader = (props) => {
     5: "Uncertain",
   };
 
+  const ensemblUrl =
+    taxonomy.ensemblTaxId === 4577 || taxonomy.ensemblTaxId === 3847
+      ? `//www.ensemblgenomes.org/id/${mapping.ensemblTranscript.enstId}`
+      : `//www.ensembl.org/id/${mapping.ensemblTranscript.enstId}`;
+
   return (
     <div className="mapping-header">
       <div className="mapping-ids">
         <h2>
-          {mapping.ensemblTranscript.enstVersion ? (
-            <Link
-              to={`//www.ensembl.org/id/${mapping.ensemblTranscript.enstId}`}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <ReviewStatus
-                entryType={mapping.ensemblTranscript.select ? "Ensembl" : ""}
-              />
-              {`${mapping.ensemblTranscript.enstId}.${mapping.ensemblTranscript.enstVersion}`}
-            </Link>
-          ) : (
-            mapping.ensemblTranscript.enstId
-          )}
+          <Link to={ensemblUrl} target="_blank" rel="noopener noreferrer">
+            <ReviewStatus
+              entryType={mapping.ensemblTranscript.select ? "Ensembl" : ""}
+            />
+            {mapping.ensemblTranscript.enstId}
+            {mapping.ensemblTranscript.enstVersion
+              ? `.${mapping.ensemblTranscript.enstVersion}`
+              : ""}
+          </Link>
         </h2>
         <div>
           <strong>Release:</strong>
