@@ -124,7 +124,11 @@ class ResultsTable extends Component {
                 entryType={mapping.ensemblTranscript.select ? "Ensembl" : ""}
               />
               {mapping.ensemblTranscript.enstId
-                ? `${mapping.ensemblTranscript.enstId}.${mapping.ensemblTranscript.enstVersion}`
+                ? `${mapping.ensemblTranscript.enstId}${
+                    mapping.ensemblTranscript.enstVersion
+                      ? `.${mapping.ensemblTranscript.enstVersion}`
+                      : ""
+                  }`
                 : null}
             </strong>
           </div>
