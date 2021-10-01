@@ -61,7 +61,7 @@ const filtersStructure = {
         group: "organism",
       },
       10116: {
-        label: "Rattus norvegicus",
+        label: "Rat",
         value: "organism:10116",
         order: 4,
         group: "organism",

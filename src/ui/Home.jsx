@@ -6,6 +6,39 @@ import Statistics from "./components/stats/Statistics";
 
 import "../styles/Home.scss";
 
+export const species = [
+  {
+    name: "Mouse",
+    taxId: 10090,
+    icon: "M",
+  },
+  {
+    name: "Human",
+    taxId: 9606,
+    icon: "H",
+  },
+  {
+    name: "Rat",
+    taxId: 10116,
+    icon: "R",
+  },
+  {
+    name: "Zebrafish",
+    taxId: 7955,
+    icon: "Z",
+  },
+  {
+    name: "Zea mays",
+    taxId: 4577,
+    icon: "c",
+  },
+  {
+    name: "Glycine max",
+    taxId: 3847,
+    icon: "^",
+  },
+];
+
 const Home = (props) => (
   <main>
     <div className="home-banner">
@@ -13,52 +46,22 @@ const Home = (props) => (
         <h5>Search for a mapping:</h5>
         <SearchField {...props} />
         <div className="home-banner__actions">
-          <button
-            type="button"
-            className="button"
-            onClick={() => props.exploreMappingsByOrganism(9606)}
-          >
-            Explore Human
-          </button>{" "}
-          <button
-            type="button"
-            className="button"
-            onClick={() => props.exploreMappingsByOrganism(10090)}
-          >
-            Explore Mouse
-          </button>{" "}
-          <button
-            type="button"
-            className="button"
-            onClick={() => props.exploreMappingsByOrganism(4577)}
-          >
-            Explore <em>Zea mais</em>
-          </button>{" "}
-          <button
-            type="button"
-            className="button"
-            onClick={() => props.exploreMappingsByOrganism(10116)}
-          >
-            Explore <em>Rattus norvegicus</em>
-          </button>{" "}
-          <button
-            type="button"
-            className="button"
-            onClick={() => props.exploreMappingsByOrganism(3847)}
-          >
-            Explore <em>Glycine max</em>
-          </button>{" "}
-          <button
-            type="button"
-            className="button"
-            onClick={() => props.exploreMappingsByOrganism(7955)}
-          >
-            Explore Zebrafish
-          </button>{" "}
+          Explore:{" "}
+          {species.map((specie) => (
+            <button
+              type="button"
+              className="button"
+              onClick={() => props.exploreMappingsByOrganism(specie.taxId)}
+              title={specie.name}
+              key={specie.taxId}
+            >
+              <span className="icon icon-species" data-icon={specie.icon} />
+            </button>
+          ))}
         </div>
       </div>
     </div>
-    <Statistics />
+    <Statistics species={species} />
   </main>
 );
 
