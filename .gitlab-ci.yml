@@ -21,7 +21,7 @@ build_static_assets_staging:
     - yarn build:staging
   artifacts:
     paths:
-      - .staging/
+      - build/
 
 build_static_assets_prod:
   only:
@@ -34,4 +34,4 @@ build_static_assets_prod:
     - yarn build
   artifacts:
     paths:
-      - .out/
+      - build/
