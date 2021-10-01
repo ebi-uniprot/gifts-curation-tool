@@ -1,36 +1,42 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import PropTypes from 'prop-types';
+import React from "react";
+import { Link } from "react-router-dom";
+import PropTypes from "prop-types";
 
-import Arrow from './Arrow';
-import ReviewStatus from './ReviewStatus';
-import Position from './Position';
+import Arrow from "./Arrow";
+import ReviewStatus from "./ReviewStatus";
+import Position from "./Position";
 
-import '../../styles/MappingHeader.scss';
+import "../../styles/MappingHeader.scss";
 
 const MappingHeader = (props) => {
   const { mapping } = props;
 
   const proteinExistenceValues = {
-    1: 'Evidence at protein level',
-    2: 'Evidence at transcript level',
-    3: 'Inferred from homology',
-    4: 'Predicted',
-    5: 'Uncertain',
+    1: "Evidence at protein level",
+    2: "Evidence at transcript level",
+    3: "Inferred from homology",
+    4: "Predicted",
+    5: "Uncertain",
   };
 
   return (
     <div className="mapping-header">
       <div className="mapping-ids">
         <h2>
-          <Link
-            to={`//www.ensembl.org/id/${mapping.ensemblTranscript.enstId}`}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <ReviewStatus entryType={mapping.ensemblTranscript.select ? 'Ensembl' : ''} />
-            {`${mapping.ensemblTranscript.enstId}.${mapping.ensemblTranscript.enstVersion}`}
-          </Link>
+          {mapping.ensemblTranscript.enstVersion ? (
+            <Link
+              to={`//www.ensembl.org/id/${mapping.ensemblTranscript.enstId}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <ReviewStatus
+                entryType={mapping.ensemblTranscript.select ? "Ensembl" : ""}
+              />
+              {`${mapping.ensemblTranscript.enstId}.${mapping.ensemblTranscript.enstVersion}`}
+            </Link>
+          ) : (
+            mapping.ensemblTranscript.enstId
+          )}
         </h2>
         <div>
           <strong>Release:</strong>
@@ -40,7 +46,7 @@ const MappingHeader = (props) => {
         <div>
           <strong>MANE Select:</strong>
           &nbsp;
-          {mapping.ensemblTranscript.select ? 'Yes' : 'No'}
+          {mapping.ensemblTranscript.select ? "Yes" : "No"}
         </div>
         <div>
           <strong>Symbol:</strong>
@@ -104,7 +110,7 @@ const MappingHeader = (props) => {
         <div>
           <strong>Canonical:</strong>
           &nbsp;
-          {mapping.uniprotEntry.isCanonical ? 'Yes' : 'No'}
+          {mapping.uniprotEntry.isCanonical ? "Yes" : "No"}
         </div>
         <div>
           <strong>Length:</strong>
@@ -114,7 +120,7 @@ const MappingHeader = (props) => {
         <div>
           <strong>Ensembl derived:</strong>
           &nbsp;
-          {mapping.uniprotEntry.ensemblDerived ? 'Yes' : 'No'}
+          {mapping.uniprotEntry.ensemblDerived ? "Yes" : "No"}
         </div>
         <div>
           <strong>Protein existence:</strong>

@@ -68,7 +68,7 @@ function Header(props) {
                   Feedback
                 </Link>
               </li>
-              {process.env.REACT_APP_READ_ONLY ? null : loginLogoutLink}
+              {process.env.REACT_APP_READ_ONLY ? loginLogoutLink : null}
             </ul>
           </nav>
           {/* <!-- /local-nav --> */}
