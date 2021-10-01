@@ -95,6 +95,7 @@ const CommentsAndStatusModal = ({
     []
   );
   const [displayModal, setDisplayModal] = useState(false);
+  const [textEditor, setTextEditor] = useState();
 
   const textEditorRef = useCallback(() => {
     if (textEditorRef.current !== null) {
@@ -109,6 +110,7 @@ const CommentsAndStatusModal = ({
       );
       textEditor.render(document.getElementById("text-editor"));
       textEditor.value(localStorage.getItem(createId(id)) || "");
+      setTextEditor(textEditor);
     }
   }, [id]);
 
@@ -163,8 +165,6 @@ const CommentsAndStatusModal = ({
   };
 
   const userToken = cookies.get("userToken");
-
-  let textEditor = null;
 
   return (
     <div className="comments-section">

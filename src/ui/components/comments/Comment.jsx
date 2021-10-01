@@ -1,8 +1,8 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import ReactMarkdown from 'react-markdown';
+import React from "react";
+import PropTypes from "prop-types";
+import ReactMarkdown from "react-markdown";
 
-import '../../../styles/Comment.scss';
+import "../../../styles/Comment.scss";
 
 const Comment = (props) => {
   const { details } = props;
@@ -14,7 +14,7 @@ const Comment = (props) => {
         <div className="comment__details">
           <span className="comment__username">{details.user}</span>
           <span className="comment__date">{details.timeAdded}</span>
-          <ReactMarkdown source={details.text} />
+          <ReactMarkdown>{details.text}</ReactMarkdown>
         </div>
       </div>
     </div>
