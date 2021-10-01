@@ -1,7 +1,0 @@
-language: node_js
-node_js:
-  - "11.10.1"
-notifications:
-  email:
-    - xwatkins@ebi.ac.uk
-    - mmahmoudy@ebi.ac.uk

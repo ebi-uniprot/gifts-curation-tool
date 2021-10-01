@@ -1,0 +1,37 @@
+stages:
+  - build_static_assets_staging
+  - build_static_assets_prod
+
+.js:
+  image: node:15
+  before_script:
+    - git --version
+    - node --version
+    - npm --version
+    - yarn --version
+
+build_static_assets_staging:
+  only:
+    refs:
+      - main
+  extends: .js
+  stage: build_static_assets_staging
+  script:
+    - yarn
+    - yarn build:staging
+  artifacts:
+    paths:
+      - .staging/
+
+build_static_assets_prod:
+  only:
+    refs:
+      - main
+  extends: .js
+  stage: build_static_assets_prod
+  script:
+    - yarn
+    - yarn build
+  artifacts:
+    paths:
+      - .out/
