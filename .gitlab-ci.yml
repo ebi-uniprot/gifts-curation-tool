@@ -1,6 +1,7 @@
 stages:
   - build_static_assets_staging
   - build_static_assets_prod
+  - build_static_assets_fallback
 
 .js:
   image: node:15
@@ -32,6 +33,19 @@ build_static_assets_prod:
   script:
     - yarn
     - yarn build
+  artifacts:
+    paths:
+      - build/
+
+build_static_assets_fallback:
+  only:
+    refs:
+      - master
+  extends: .js
+  stage: build_static_assets_fallback
+  script:
+    - yarn
+    - yarn build:fallback
   artifacts:
     paths:
       - build/
