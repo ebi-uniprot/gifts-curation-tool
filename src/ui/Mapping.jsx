@@ -3,6 +3,7 @@ import { withRouter } from "react-router-dom";
 import PropTypes from "prop-types";
 import axios from "axios";
 import { withCookies } from "react-cookie";
+import { ProtvistaUniprotStructure } from "protvista-uniprot";
 
 import LoadingSpinner from "./components/LoadingSpinner";
 import Alignment from "./components/alignment/Alignment";
@@ -15,6 +16,16 @@ import MappingComments from "./components/comments/MappingComments";
 import { statusesList } from "./util/util";
 
 import "../styles/Mapping.scss";
+
+export const defineCustomElement = (name, customElement) => {
+  if (!window.customElements.get?.(name)) {
+    try {
+      window.customElements.define(name, customElement);
+    } catch (err) {
+      /**/
+    }
+  }
+};
 
 class Mapping extends Component {
   defaultState = {
@@ -42,6 +53,10 @@ class Mapping extends Component {
     };
 
     this.getMappingDetails(mappingId, isLoggedIn);
+    defineCustomElement(
+      "protvista-uniprot-structure",
+      ProtvistaUniprotStructure
+    );
   }
 
   componentDidUpdate(prevProps) {
@@ -175,6 +190,14 @@ class Mapping extends Component {
             <Alignment mappingId={this.state.mappingId} />
           ) : null}
         </div>
+
+        {taxonomy.ensemblTaxId === 9606 && (
+          <div className="row column medium-12">
+            <protvista-uniprot-structure
+              accession={mapping.uniprotEntry.uniprotAccession}
+            ></protvista-uniprot-structure>
+          </div>
+        )}
 
         <div className="row column medium-12">
           <h3>Related Mappings</h3>
