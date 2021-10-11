@@ -8,14 +8,14 @@ import "../styles/Home.scss";
 
 export const species = [
   {
-    name: "Mouse",
-    taxId: 10090,
-    icon: "M",
-  },
-  {
     name: "Human",
     taxId: 9606,
     icon: "H",
+  },
+  {
+    name: "Mouse",
+    taxId: 10090,
+    icon: "M",
   },
   {
     name: "Rat",
