@@ -43,11 +43,13 @@ const MappingHeader = (props) => {
           &nbsp;
           {mapping.ensemblRelease}
         </div>
-        <div>
-          <strong>MANE Select:</strong>
-          &nbsp;
-          {mapping.ensemblTranscript.select ? "Yes" : "No"}
-        </div>
+        {taxonomy.ensemblTaxId === 9606 && (
+          <div>
+            <strong>MANE Select:</strong>
+            &nbsp;
+            {mapping.ensemblTranscript.select ? "Yes" : "No"}
+          </div>
+        )}
         <div>
           <strong>Symbol:</strong>
           &nbsp;
