@@ -191,13 +191,11 @@ class Mapping extends Component {
           ) : null}
         </div>
 
-        {taxonomy.ensemblTaxId === 9606 && (
-          <div className="row column medium-12">
-            <protvista-uniprot-structure
-              accession={mapping.uniprotEntry.uniprotAccession}
-            ></protvista-uniprot-structure>
-          </div>
-        )}
+        <div className="row column medium-12">
+          <protvista-uniprot-structure
+            accession={mapping.uniprotEntry.uniprotAccession}
+          ></protvista-uniprot-structure>
+        </div>
 
         <div className="row column medium-12">
           <h3>Related Mappings</h3>
