@@ -4,10 +4,10 @@ import PropTypes from "prop-types";
 import axios from "axios";
 import { withCookies } from "react-cookie";
 import ReactModal from "react-modal";
-import SimpleMDE from "simplemde";
+import EasyMDE from "easymde";
 
 import SendNotificationUI from "../SendNotificationUI";
-import "../../../../node_modules/simplemde/dist/simplemde.min.css";
+import "../../../../node_modules/easymde/dist/easymde.min.css";
 import "../../../styles/CommentsAndStatusModal.scss";
 
 ReactModal.setAppElement("#root");
@@ -99,7 +99,7 @@ const CommentsAndStatusModal = ({
 
   const textEditorRef = useCallback(() => {
     if (textEditorRef.current !== null) {
-      const textEditor = new SimpleMDE({
+      const textEditor = new EasyMDE({
         element: textEditorRef.current,
         initialValue: localStorage.getItem(createId(id)) || "",
         hideIcons: ["image"],
