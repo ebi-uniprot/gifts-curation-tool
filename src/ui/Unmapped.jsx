@@ -12,7 +12,7 @@ import StatusText from "./components/status/StatusText";
 import { statusesList } from "./util/util";
 
 import "../styles/Unmapped.scss";
-import "../../node_modules/simplemde/dist/simplemde.min.css";
+import "../../node_modules/easymde/dist/easymde.min.css";
 
 class Unmapped extends Component {
   defaultState = {
