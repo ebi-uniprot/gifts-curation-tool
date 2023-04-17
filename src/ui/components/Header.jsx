@@ -64,6 +64,13 @@ function Header(props) {
                 </a>
               </li>
               <li>
+                 <a
+                  href={`${process.env.REACT_APP_API_URL}/docs/`} target="_blank"
+                >
+                  Documentation
+                </a>
+              </li>
+              <li>
                 <Link to={`${process.env.REACT_APP_BASE_URL}/feedback`}>
                   Feedback
                 </Link>
