@@ -65,7 +65,7 @@ function Header(props) {
               </li>
               <li>
                  <a
-                  href={`${process.env.REACT_APP_API_URL}/docs/`} target="_blank"
+                  href={`${process.env.REACT_APP_API_URL}/docs/`} rel="noreferrer" target="_blank"
                 >
                   Documentation
                 </a>
