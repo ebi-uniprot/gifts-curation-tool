@@ -75,6 +75,13 @@ function Header(props) {
                   Feedback
                 </Link>
               </li>
+              <li>
+                <a rel="noreferrer"
+                href="https://www.ebi.ac.uk/long-term-data-preservation"
+                target="_blank">
+                  Data Preservation
+                </a>
+              </li>
               {!process.env.REACT_APP_READ_ONLY && loginLogoutLink}
             </ul>
           </nav>
