@@ -1,12 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Header from './components/Header';
+import ClosableBanner from "./components/ClosableBanner";
 
 const Layout = (props) => {
   const { children, frontendVersion, backendVersion } = props;
 
   return (
     <div id="content">
+      <ClosableBanner/>
       <div id="modal" />
       <Header {...props} />
       {/* <!-- Suggested layout containers --> */}
