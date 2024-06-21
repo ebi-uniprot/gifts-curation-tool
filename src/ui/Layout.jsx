@@ -8,7 +8,6 @@ const Layout = (props) => {
 
   return (
     <div id="content">
-      <ClosableBanner/>
       <div id="modal" />
       <Header {...props} />
       {/* <!-- Suggested layout containers --> */}
