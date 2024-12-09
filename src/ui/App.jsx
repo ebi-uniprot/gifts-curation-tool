@@ -18,7 +18,6 @@ import Broken from "./Broken";
 import Message from "./components/Message";
 import NoResults from "./NoResults";
 import Feedback from "./Feedback";
-import authConfig from "../authConfig";
 import { getSecondsSinceEpoch } from "./util/util";
 
 import "../styles/Gifts.scss";
