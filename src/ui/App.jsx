@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Switch, Route, withRouter, Link } from "react-router-dom";
+import {Switch, Route, withRouter, Link, Redirect} from "react-router-dom";
 import PropTypes from "prop-types";
 import { withCookies } from "react-cookie";
 import queryString from "query-string";
@@ -22,6 +22,8 @@ import authConfig from "../authConfig";
 import { getSecondsSinceEpoch } from "./util/util";
 
 import "../styles/Gifts.scss";
+import LoadingSpinner from "./components/LoadingSpinner";
+import ChangePassword from "./ChangePassword";
 
 class App extends Component {
   defaultState = {
@@ -30,12 +32,13 @@ class App extends Component {
       ? // eslint-disable-next-line react/destructuring-assignment
         queryString.parse(this.props.location.search).searchTerm
       : "",
-    authenticated: false,
+    // Set an initial authenticated state to null to represent the "loading" state
+    authenticated: null,
     userToken: null,
     hasExpiredToken: false,
     user: {
-      id: null,
-      name: null,
+      email: null,
+      full_name: null,
     },
     message: null,
     offset: 0,
@@ -53,9 +56,12 @@ class App extends Component {
     this.state = this.defaultState;
   }
 
-  componentWillMount() {
+  componentDidMount() {
+    this.loadAppVersions();
     this.setAuthState();
+  }
 
+  loadAppVersions() {
     axios
       .all([
         axios.get(`${process.env.REACT_APP_API_URL}/version/?format=json`),
@@ -63,71 +69,63 @@ class App extends Component {
           `${process.env.REACT_APP_API_URL}/mappings/statuses/?format=json`
         ),
       ])
-      .then((response) => {
+      .then(([versionRes, statusRes]) => {
         this.setState({
-          backendVersion: response[0].data.version,
-          statusValues: response[1].data,
+          backendVersion: versionRes.data.version,
+          statusValues: statusRes.data,
         });
       });
   }
 
-  setAuthState(successCallback = () => null, failureCallback = () => null) {
+  setAuthState = (callback = () => {}) => {
     const { cookies } = this.props;
+    const userToken = cookies.get("userToken");
 
-    try {
-      const rawUserToken = cookies.get("userToken");
-
-      if (!this.verifyJWT()) {
-        return false;
-      }
-
+    if (userToken) {
       this.setState(
         {
           authenticated: true,
-          userToken: rawUserToken,
+          userToken,
+          user: this.state.user || {}, // Ensure `user` exists
         },
-        successCallback
+        callback // Invoke callback after state is updated
       );
-
-      return true;
-    } catch (e) {
+    } else {
+      console.log("No userToken found. Setting state to unauthenticated.");
       this.setState(
         {
           authenticated: false,
           userToken: null,
+          user: {
+            email: null,
+            full_name: null,
+          },
+          callback
         },
-        failureCallback
+        () => {
+          console.log("State updated: ", this.state);
+        }
       );
-
-      return false;
     }
-  }
-
-  verifyJWT = () => {
-    const { cookies } = this.props;
-
-    const rawUserToken = cookies.get("userToken");
-    const userToken = jwt.verify(rawUserToken, authConfig.aap.public_key, {
-      algorithm: authConfig.aap.algorithm,
-    });
-
-    if (
-      typeof userToken.exp !== "undefined" &&
-      userToken.exp <= getSecondsSinceEpoch()
-    ) {
-      cookies.remove("userToken", { path: "/" });
-
-      this.tokenIsExpired();
-      return false;
-    }
-
-    return true;
   };
 
   onLogout = () => {
-    const { history } = this.props;
+    const { history, cookies } = this.props;
 
-    this.setState(this.defaultState);
+    this.setState(
+      {
+        authenticated: false,
+        userToken: null,
+        user: {
+          email: null,
+          full_name: null,
+        }
+      },
+      () => {
+        console.log("State updated: ", this.state);
+      }
+    );
+    cookies.remove("userToken", { path: "/" });
     history.push(`${process.env.REACT_APP_BASE_URL}/`);
   };
 
@@ -170,46 +168,51 @@ class App extends Component {
   onLoginSuccess = (user) => {
     const { history } = this.props;
 
-    if (this.setAuthState()) {
-      this.setState(
-        {
-          user,
-        },
-        () => {
-          history.push(`${process.env.REACT_APP_BASE_URL}/`);
-        }
-      );
-    }
+    this.setState(
+      {
+        authenticated: true,
+        user,
+      },
+      () => {
+        console.log("Login successful. State updated:", this.state);
+        history.push(`${process.env.REACT_APP_BASE_URL}/`);
+      }
+    );
   };
 
   onLoginFailure = () => {
     const { cookies } = this.props;
 
-    this.setState(this.defaultState);
-    cookies.set("userToken", "", { path: "/" });
-  };
-
-  tokenIsExpired = () => {
     this.setState({
       authenticated: false,
-      hasExpiredToken: true,
+      // hasExpiredToken: true,
       user: {
-        id: null,
-        name: null,
+        email: null,
+        full_name: null,
       },
     });
+    cookies.remove("userToken", { path: "/" });
   };
+
+  // tokenIsExpired = () => {
+  //   this.setState({
+  //     authenticated: false,
+  //     hasExpiredToken: true,
+  //     user: {
+  //       email: null,
+  //       full_name: null,
+  //     },
+  //   });
+  // };
 
   hasValidAuthenticationToken = () => {
     const { cookies } = this.props;
     const rawUserToken = cookies.get("userToken") || undefined;
 
     try {
-      if (!rawUserToken) {
-        return false;
+      if (rawUserToken) {
+        return true;
       }
-
-      return this.verifyJWT();
     } catch (e) {
       return false;
     }
@@ -396,11 +399,23 @@ class App extends Component {
       hasExpiredToken,
     } = this.state;
 
+    // Prevent rendering Unmapped until authenticated is resolved
+    if (authenticated === null) {
+      // Show a loading spinner until authentication is resolved
+      return <LoadingSpinner />;
+    }
+
     const LoginComponent = () => (
-      <Login
-        onLoginSuccess={this.onLoginSuccess}
-        onLoginFailure={this.onLoginFailure}
-      />
+      // If the user is already authenticated (true), redirect them to the main page (/).
+      this.state.authenticated ? (
+        <Redirect to={`${process.env.REACT_APP_BASE_URL}/`} />
+      // If not, render the Login component
+      ) : (
+        <Login
+          onLoginSuccess={this.onLoginSuccess}
+          onLoginFailure={this.onLoginFailure}
+        />
+      )
     );
 
     const LogoutComponent = () => <Logout onLogout={this.onLogout} />;
@@ -436,12 +451,12 @@ class App extends Component {
             {message !== null ? (
               <Message details={message} onClose={this.clearMessage} />
             ) : null}
-            {hasExpiredToken && (
-              <Message
-                details={tokenIsExpiredMessage}
-                onClose={this.clearExpiredLoginMessage}
-              />
-            )}
+            {/*{hasExpiredToken && (*/}
+            {/*  <Message*/}
+            {/*    details={tokenIsExpiredMessage}*/}
+            {/*    onClose={this.clearExpiredLoginMessage}*/}
+            {/*  />*/}
+            {/*)}*/}
             <Switch>
               <Route
                 exact
@@ -462,6 +477,11 @@ class App extends Component {
                 exact
                 path={`${process.env.REACT_APP_BASE_URL}/login`}
                 component={LoginComponent}
+              />
+              <Route
+                  // exact
+                  path={`${process.env.REACT_APP_BASE_URL}/change-password`}
+                  component={ChangePassword}
               />
               <Route
                 exact
