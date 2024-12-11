@@ -41,7 +41,7 @@ class ChangePassword extends Component {
 
     try {
       const response = await axios.post(
-        `${process.env.REACT_APP_API_URL}/change_password/`,
+        `${process.env.REACT_APP_API_URL}/users/change_password/`,
         {
           email,
           old_password: oldPassword,
