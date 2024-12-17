@@ -1,9 +1,8 @@
 import React, { Component } from "react";
-import {Switch, Route, withRouter, Link, Redirect} from "react-router-dom";
+import {Switch, Route, withRouter, Redirect} from "react-router-dom";
 import PropTypes from "prop-types";
 import { withCookies } from "react-cookie";
 import queryString from "query-string";
-import * as jwt from "jsonwebtoken";
 import axios from "axios";
 
 import packageJson from "../../package.json";
@@ -18,7 +17,6 @@ import Broken from "./Broken";
 import Message from "./components/Message";
 import NoResults from "./NoResults";
 import Feedback from "./Feedback";
-import { getSecondsSinceEpoch } from "./util/util";
 
 import "../styles/Gifts.scss";
 import LoadingSpinner from "./components/LoadingSpinner";
@@ -395,7 +393,7 @@ class App extends Component {
       authenticated,
       message,
       exploreMappingsByOrganism,
-      hasExpiredToken,
+      // hasExpiredToken,
     } = this.state;
 
     // Prevent rendering Unmapped until authenticated is resolved
@@ -434,15 +432,15 @@ class App extends Component {
       hasValidAuthenticationToken: this.hasValidAuthenticationToken,
     };
 
-    const tokenIsExpiredMessage = {
-      isError: true,
-      title: "Your login token is expired",
-      text: (
-        <Link to={`${process.env.REACT_APP_BASE_URL}/login`}>
-          Click here to login again.
-        </Link>
-      ),
-    };
+    // const tokenIsExpiredMessage = {
+    //   isError: true,
+    //   title: "Your login token is expired",
+    //   text: (
+    //     <Link to={`${process.env.REACT_APP_BASE_URL}/login`}>
+    //       Click here to login again.
+    //     </Link>
+    //   ),
+    // };
     return (
       <Layout {...appProps}>
         <section id="main-content-area" role="main">
