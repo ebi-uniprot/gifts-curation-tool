@@ -21,7 +21,7 @@ class Login extends Component {
   handleLoginSubmit = async (e) => {
     e.preventDefault();
 
-    const { onLoginSuccess, onLoginFailure, cookies } = this.props;
+    const { onLoginSuccess, cookies } = this.props;
 
     // Reset errors
     this.setState({
