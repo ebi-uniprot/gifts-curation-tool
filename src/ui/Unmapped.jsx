@@ -27,15 +27,19 @@ class Unmapped extends Component {
   constructor(props) {
     super(props);
 
-    const {
-      match: { params },
-      isLoggedIn,
-    } = props;
-    const { id } = params;
-
     this.state = {
       ...this.defaultState,
     };
+  }
+
+  componentDidMount() {
+    const { isLoggedIn } = this.props; // Access isLoggedIn prop
+    console.log("Is user logged in?", isLoggedIn);
+
+    const {
+      match: { params },
+    } = this.props;
+    const { id } = params;
 
     this.getUnmappedDetails(id, isLoggedIn);
   }
