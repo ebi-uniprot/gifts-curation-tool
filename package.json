@@ -54,5 +54,10 @@
   },
   "devDependencies": {
     "env-cmd": "^10.1.0"
+  },
+  "resolutions": {
+    "**/expect": "29.7.0",
+    "**/pretty-format": "29.7.0",
+    "**/minimatch": "^9.0.4"
   }
 }
