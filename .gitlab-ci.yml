@@ -15,7 +15,6 @@ build_static_assets_staging:
   only:
     refs:
       - master
-      - fix-dependencies
   extends: .js
   stage: build_static_assets_staging
   script:
